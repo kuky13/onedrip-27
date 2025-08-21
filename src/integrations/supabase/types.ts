@@ -1476,6 +1476,10 @@ export type Database = {
         Args: { license_code: string; p_user_id: string }
         Returns: Json
       }
+      admin_activate_license: {
+        Args: { p_license_id: string }
+        Returns: Json
+      }
       admin_activate_user_license: {
         Args: { p_user_id: string }
         Returns: Json
@@ -1514,7 +1518,14 @@ export type Database = {
         Returns: Json
       }
       admin_create_license: {
-        Args: { p_expires_at?: string }
+        Args:
+          | {
+              p_code?: string
+              p_expires_at?: string
+              p_notes?: string
+              p_user_id?: string
+            }
+          | { p_expires_at?: string }
         Returns: Json
       }
       admin_create_license_advanced: {
@@ -1546,6 +1557,10 @@ export type Database = {
           p_type: string
         }
         Returns: string
+      }
+      admin_deactivate_license: {
+        Args: { p_license_id: string }
+        Returns: Json
       }
       admin_deactivate_user_license: {
         Args: { p_user_id: string }
@@ -1776,6 +1791,10 @@ export type Database = {
       admin_renew_user_license: {
         Args: { p_additional_days: number; p_user_id: string }
         Returns: boolean
+      }
+      admin_toggle_license_status: {
+        Args: { p_license_id: string }
+        Returns: Json
       }
       admin_transfer_license: {
         Args: { p_license_id: string; p_new_user_id: string; p_notes?: string }
@@ -2292,7 +2311,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: {
-        Args: Record<PropertyKey, never>
+        Args: Record<PropertyKey, never> | { user_id?: string }
         Returns: boolean
       }
       is_current_user_admin: {
