@@ -150,23 +150,23 @@ export const AdminLicenseManagerEnhanced = () => {
     }
   });
   const toggleLicenseStatusMutation = useMutation({
-    mutationFn: async (licenseId: string) => {
-      const {
-        data,
-        error
-      } = await supabase.rpc('admin_toggle_license_status', {
-        p_license_id: licenseId
-      });
+    mutationFn: async (license: License) => {
+      const newStatus = !license.is_active;
+      const { error } = await supabase
+        .from('licenses')
+        .update({ is_active: newStatus })
+        .eq('id', license.id);
+      
       if (error) throw error;
-      return data;
+      return { id: license.id, is_active: newStatus };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ['admin-licenses']
       });
       showSuccess({
         title: 'Status Alterado!',
-        description: 'O status da licença foi alterado com sucesso.'
+        description: `Licença ${data.is_active ? 'ativada' : 'desativada'} com sucesso.`
       });
     },
     onError: (error: any) => {
@@ -349,7 +349,7 @@ export const AdminLicenseManagerEnhanced = () => {
                          <Button 
                            size="sm" 
                            variant={license.is_active ? "outline" : "default"} 
-                           onClick={() => toggleLicenseStatusMutation.mutate(license.id)} 
+                           onClick={() => toggleLicenseStatusMutation.mutate(license)} 
                            disabled={toggleLicenseStatusMutation.isPending}
                            title={license.is_active ? "Desativar licença" : "Ativar licença"}
                          >
