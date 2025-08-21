@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/useToast';
-import { Plus, Search, Filter, User, Calendar, Key, Edit, RefreshCw, Unlink, AlertCircle, CheckCircle, BarChart3, Copy } from 'lucide-react';
+import { Plus, Search, Filter, User, Calendar, Key, Edit, RefreshCw, Unlink, AlertCircle, CheckCircle, BarChart3, Copy, Power, PowerOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LicenseReportsPanel } from './LicenseReportsPanel';
@@ -19,6 +19,7 @@ interface License {
   user_name: string | null;
   expires_at: string | null;
   created_at: string;
+  is_active: boolean;
 }
 export const AdminLicenseManagerEnhanced = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,7 +56,8 @@ export const AdminLicenseManagerEnhanced = () => {
         user_email: item.user_email || null,
         user_name: item.user_name || null,
         expires_at: item.expires_at || null,
-        created_at: item.created_at || new Date().toISOString()
+        created_at: item.created_at || new Date().toISOString(),
+        is_active: item.is_active !== undefined ? item.is_active : true
       }));
       console.log('Transformed licenses data:', transformedData);
       return transformedData;
@@ -147,23 +149,66 @@ export const AdminLicenseManagerEnhanced = () => {
       });
     }
   });
+  const toggleLicenseStatusMutation = useMutation({
+    mutationFn: async (licenseId: string) => {
+      const {
+        data,
+        error
+      } = await supabase.rpc('admin_toggle_license_status', {
+        p_license_id: licenseId
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['admin-licenses']
+      });
+      showSuccess({
+        title: 'Status Alterado!',
+        description: 'O status da licença foi alterado com sucesso.'
+      });
+    },
+    onError: (error: any) => {
+      showError({
+        title: 'Erro ao alterar status',
+        description: error.message
+      });
+    }
+  });
   const filteredLicenses = licenses?.filter(license => {
     const matchesSearch = license.code.toLowerCase().includes(searchTerm.toLowerCase()) || license.user_name && license.user_name.toLowerCase().includes(searchTerm.toLowerCase()) || license.user_email && license.user_email.toLowerCase().includes(searchTerm.toLowerCase());
     const now = new Date();
     const isExpired = license.expires_at && new Date(license.expires_at) < now;
-    const isActive = !license.expires_at || new Date(license.expires_at) > new Date();
-    const matchesStatus = statusFilter === 'all' || statusFilter === 'active' && isActive && !isExpired || statusFilter === 'inactive' && !isActive || statusFilter === 'expired' && isExpired;
+    const isTemporallyActive = !license.expires_at || new Date(license.expires_at) > new Date();
+    
+    // Combinar is_active e status temporal
+    const isFullyActive = license.is_active && isTemporallyActive && !isExpired;
+    
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'active' && isFullyActive) || 
+                         (statusFilter === 'inactive' && !license.is_active) || 
+                         (statusFilter === 'expired' && isExpired);
     return matchesSearch && matchesStatus;
   });
   const getStatusBadge = (license: License) => {
     const now = new Date();
     const isExpired = license.expires_at && new Date(license.expires_at) < now;
+    
+    if (!license.is_active) {
+      return <Badge variant="secondary" className="flex items-center space-x-1">
+        <PowerOff className="h-3 w-3" />
+        <span>Inativa</span>
+      </Badge>;
+    }
+    
     if (isExpired) {
       return <Badge variant="destructive" className="flex items-center space-x-1">
         <AlertCircle className="h-3 w-3" />
         <span>Expirada</span>
       </Badge>;
     }
+    
     return <Badge variant="default" className="flex items-center space-x-1">
       <CheckCircle className="h-3 w-3" />
       <span>Ativa</span>
@@ -300,20 +345,31 @@ export const AdminLicenseManagerEnhanced = () => {
                           </div>}
                       </div>
 
-                      <div className="flex items-center space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => renewLicenseMutation.mutate({
-                        licenseId: license.id,
-                        days: renewDays
-                      })} disabled={renewLicenseMutation.isPending}>
-                          <RefreshCw className="h-3 w-3 mr-1" />
-                          Renovar
-                        </Button>
+                       <div className="flex items-center space-x-2">
+                         <Button 
+                           size="sm" 
+                           variant={license.is_active ? "outline" : "default"} 
+                           onClick={() => toggleLicenseStatusMutation.mutate(license.id)} 
+                           disabled={toggleLicenseStatusMutation.isPending}
+                           title={license.is_active ? "Desativar licença" : "Ativar licença"}
+                         >
+                           {license.is_active ? <PowerOff className="h-3 w-3 mr-1" /> : <Power className="h-3 w-3 mr-1" />}
+                           {license.is_active ? "Desativar" : "Ativar"}
+                         </Button>
 
-                        {license.user_id && <Button size="sm" variant="outline" onClick={() => unlinkLicenseMutation.mutate(license.id)} disabled={unlinkLicenseMutation.isPending}>
-                            <Unlink className="h-3 w-3 mr-1" />
-                            Desvincular
-                          </Button>}
-                      </div>
+                         <Button size="sm" variant="outline" onClick={() => renewLicenseMutation.mutate({
+                         licenseId: license.id,
+                         days: renewDays
+                       })} disabled={renewLicenseMutation.isPending}>
+                           <RefreshCw className="h-3 w-3 mr-1" />
+                           Renovar
+                         </Button>
+
+                         {license.user_id && <Button size="sm" variant="outline" onClick={() => unlinkLicenseMutation.mutate(license.id)} disabled={unlinkLicenseMutation.isPending}>
+                             <Unlink className="h-3 w-3 mr-1" />
+                             Desvincular
+                           </Button>}
+                       </div>
                     </div>
                   </div>;
               })}
