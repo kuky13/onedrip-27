@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/plans", "destination": "/" },
+    { "source": "/purchase-success", "destination": "/" },
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}

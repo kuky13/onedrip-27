@@ -1,0 +1,517 @@
+/* Desktop Grid System - Horizontal Layout Optimization */
+
+/* Global Desktop Layout Classes */
+.desktop-horizontal-layout {
+  --desktop-sidebar-width: 280px;
+  --desktop-header-height: 80px;
+  --desktop-content-padding: 2.5rem;
+  --desktop-grid-gap: 2rem;
+  --desktop-card-min-width: 350px;
+  --desktop-section-spacing: 3.5rem;
+  --desktop-card-padding: 2rem;
+  --desktop-form-gap: 1.5rem;
+  --desktop-button-spacing: 1rem;
+}
+
+/* Desktop Main Container */
+.desktop-main-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  gap: 0;
+}
+
+/* Desktop Content Area */
+.desktop-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Desktop Header Enhancements */
+.desktop-header {
+  height: var(--desktop-header-height);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+/* Desktop Main Content */
+.desktop-main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Desktop Content Wrapper */
+.desktop-content-wrapper {
+  padding: var(--desktop-content-padding);
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100%;
+  container-type: inline-size;
+}
+
+/* Desktop Page Content */
+.desktop-page-content {
+  display: grid;
+  gap: var(--desktop-section-spacing);
+  width: 100%;
+  grid-template-columns: 1fr;
+}
+
+/* Desktop Grid Layouts */
+.desktop-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--desktop-grid-gap);
+  align-items: start;
+}
+
+.desktop-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--desktop-grid-gap);
+  align-items: start;
+}
+
+.desktop-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--desktop-grid-gap);
+  align-items: start;
+}
+
+.desktop-grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--desktop-card-min-width), 1fr));
+  gap: var(--desktop-grid-gap);
+  align-items: start;
+}
+
+/* Desktop Flex Layouts */
+.desktop-flex-row {
+  display: flex;
+  gap: var(--desktop-grid-gap);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.desktop-flex-row > * {
+  flex: 1;
+  min-width: var(--desktop-card-min-width);
+}
+
+/* Desktop Card Enhancements */
+.desktop-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: var(--desktop-card-padding);
+  box-shadow: 0 2px 8px hsl(var(--shadow) / 0.1);
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.desktop-card:hover {
+  box-shadow: 0 4px 16px hsl(var(--shadow) / 0.15);
+  transform: translateY(-2px);
+}
+
+/* Desktop Section Headers */
+.desktop-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.desktop-section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+/* Desktop Stats Grid */
+.desktop-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--desktop-grid-gap);
+  margin-bottom: 2.5rem;
+}
+
+/* Desktop Dashboard Specific */
+.desktop-dashboard-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.desktop-dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.desktop-dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Desktop Form Layouts */
+.desktop-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--desktop-form-gap);
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.desktop-form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.desktop-form-full {
+  grid-column: 1 / -1;
+}
+
+/* Desktop Table Enhancements */
+.desktop-table-container {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px hsl(var(--shadow) / 0.1);
+}
+
+/* Desktop Modal Enhancements */
+.desktop-modal {
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto;
+  min-width: 600px;
+}
+
+.desktop-modal-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Desktop Responsive Breakpoints */
+@media (min-width: 1200px) {
+  .desktop-content-wrapper {
+    padding: 3rem;
+  }
+  
+  .desktop-grid-gap {
+    --desktop-grid-gap: 2rem;
+  }
+  
+  .desktop-section-spacing {
+    --desktop-section-spacing: 4rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .desktop-dashboard-layout {
+    grid-template-columns: 3fr 1fr;
+  }
+  
+  .desktop-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Modal and Form Specific Styles */
+.desktop-modal {
+  width: 90vw;
+  max-width: 1200px;
+  max-height: 85vh;
+}
+
+.desktop-form-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.desktop-view-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.desktop-form-section {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.desktop-card-content {
+  padding: 1.5rem;
+}
+
+.desktop-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.desktop-card-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* Desktop Sidebar Styles */
+.desktop-sidebar {
+  width: var(--desktop-sidebar-width);
+  border-right: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+}
+
+.desktop-sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.3);
+}
+
+.desktop-sidebar-content {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.desktop-sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.desktop-sidebar-item {
+  margin-bottom: 0.25rem;
+}
+
+.desktop-sidebar-button {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.desktop-sidebar-button:hover {
+  background: hsl(var(--accent));
+  transform: translateX(2px);
+}
+
+.desktop-sidebar-footer {
+  padding: 1rem;
+  border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.3);
+}
+
+.desktop-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+}
+
+.desktop-user-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.desktop-user-email {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* Desktop Header Navigation */
+.desktop-header-nav {
+  height: var(--desktop-header-height);
+  padding: 0 2rem;
+  background: hsl(var(--card) / 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.desktop-header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.desktop-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.desktop-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.desktop-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  transition: transform 0.2s ease;
+}
+
+.desktop-logo:hover {
+  transform: scale(1.05);
+}
+
+.desktop-app-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.desktop-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 2rem;
+}
+
+.desktop-nav-button {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 0.5rem;
+}
+
+.desktop-nav-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.15);
+}
+
+.desktop-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.desktop-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+}
+
+.desktop-primary-button {
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px hsl(var(--primary) / 0.25);
+}
+
+.desktop-primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px hsl(var(--primary) / 0.35);
+}
+
+/* Desktop Animation Enhancements */
+.desktop-animate-in {
+  animation: desktopSlideIn 0.3s ease-out;
+}
+
+.desktop-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.desktop-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes desktopSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Desktop Utility Classes */
+.desktop-full-width {
+  width: 100%;
+}
+
+.desktop-max-content {
+  width: max-content;
+}
+
+.desktop-min-content {
+  width: min-content;
+}
+
+.desktop-space-x-lg > * + * {
+  margin-left: 2rem;
+}
+
+.desktop-space-y-lg > * + * {
+  margin-top: 2rem;
+}
+
+/* Desktop Print Styles */
+@media print {
+  .desktop-horizontal-layout {
+    display: block;
+  }
+  
+  .desktop-main-container {
+    display: block;
+  }
+  
+  .desktop-grid-2,
+  .desktop-grid-3,
+  .desktop-grid-4 {
+    display: block;
+  }
+  
+  .desktop-card {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}

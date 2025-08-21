@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Notificações</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Teste de Notificações</h1>
+    <div id="output"></div>
+    <button onclick="testMarkAsRead()">Testar Marcar como Lida</button>
+    <button onclick="testSoftDelete()">Testar Soft Delete</button>
+    <button onclick="getNotifications()">Buscar Notificações</button>
+    
+    <script>
+        // Configuração do Supabase (substitua pelas suas credenciais)
+        const supabaseUrl = 'https://your-project.supabase.co';
+        const supabaseKey = 'your-anon-key';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += '<p>' + JSON.stringify(message, null, 2) + '</p>';
+            console.log(message);
+        }
+        
+        async function getNotifications() {
+            try {
+                log('🔍 Buscando notificações...');
+                const { data, error } = await supabase.rpc('get_user_notifications', {
+                    p_limit: 10,
+                    p_offset: 0
+                });
+                
+                if (error) {
+                    log('❌ Erro ao buscar notificações: ' + error.message);
+                } else {
+                    log('✅ Notificações encontradas: ' + data.length);
+                    log(data);
+                }
+            } catch (err) {
+                log('❌ Erro: ' + err.message);
+            }
+        }
+        
+        async function testMarkAsRead() {
+            try {
+                // Primeiro, buscar uma notificação para testar
+                const { data: notifications, error: fetchError } = await supabase.rpc('get_user_notifications', {
+                    p_limit: 1,
+                    p_offset: 0
+                });
+                
+                if (fetchError || !notifications || notifications.length === 0) {
+                    log('❌ Nenhuma notificação encontrada para testar');
+                    return;
+                }
+                
+                const notificationId = notifications[0].id;
+                log('📖 Testando marcar como lida: ' + notificationId);
+                
+                const { data, error } = await supabase.rpc('mark_notification_as_read', {
+                    p_notification_id: notificationId
+                });
+                
+                if (error) {
+                    log('❌ Erro ao marcar como lida: ' + error.message);
+                } else {
+                    log('✅ Marcado como lida com sucesso');
+                    log(data);
+                }
+            } catch (err) {
+                log('❌ Erro: ' + err.message);
+            }
+        }
+        
+        async function testSoftDelete() {
+            try {
+                // Primeiro, buscar uma notificação para testar
+                const { data: notifications, error: fetchError } = await supabase.rpc('get_user_notifications', {
+                    p_limit: 1,
+                    p_offset: 0
+                });
+                
+                if (fetchError || !notifications || notifications.length === 0) {
+                    log('❌ Nenhuma notificação encontrada para testar');
+                    return;
+                }
+                
+                const userNotificationId = notifications[0].user_notification_id;
+                log('🗑️ Testando soft delete: ' + userNotificationId);
+                
+                const { data, error } = await supabase
+                    .from('user_notifications')
+                    .update({ user_deleted_at: new Date().toISOString() })
+                    .eq('id', userNotificationId)
+                    .select();
+                
+                if (error) {
+                    log('❌ Erro no soft delete: ' + error.message);
+                } else {
+                    log('✅ Soft delete realizado com sucesso');
+                    log(data);
+                }
+            } catch (err) {
+                log('❌ Erro: ' + err.message);
+            }
+        }
+        
+        // Testar autenticação
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                log('✅ Usuário autenticado: ' + session.user.email);
+            } else {
+                log('❌ Usuário não autenticado');
+            }
+        });
+    </script>
+</body>
+</html>
