@@ -36,6 +36,7 @@ import { PWAProvider } from "./components/PWAProvider";
 import NotificationsPage from "./pages/NotificationsPage";
 import ServiceOrderSharePage from "./pages/ServiceOrderSharePage";
 import { ServiceOrderSettings } from "./components/ServiceOrderSettings";
+import HelpCenterPage from "./pages/HelpCenterPage";
 
 import { CompanyBrandingSettings } from "./components/CompanyBrandingSettings";
 
@@ -206,6 +207,14 @@ const AppContent = () => {
           element={
             <ProtectedRoute>
               <CompanyBrandingSettings />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/central-de-ajuda" 
+          element={
+            <ProtectedRoute>
+              <HelpCenterPage />
             </ProtectedRoute>
           } 
         />

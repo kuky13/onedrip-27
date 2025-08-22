@@ -75,9 +75,8 @@ export const ScaleOnHover: React.FC<ScaleOnHoverProps> = ({
   className
 }) => (
   <motion.div
-    whileHover={{ scale }}
-    whileTap={{ scale: 0.98 }}
-    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+    whileHover={{ opacity: 0.8 }}
+    transition={{ duration: 0.2 }}
     className={cn("cursor-pointer", className)}
   >
     {children}
@@ -124,10 +123,10 @@ export const PageTransition: React.FC<PageTransitionProps> = ({
   className
 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -10 }}
-    transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.3 }}
     className={className}
   >
     {children}
@@ -147,16 +146,17 @@ export const StaggerList: React.FC<StaggerListProps> = ({
   staggerDelay = 0.1
 }) => (
   <motion.div
-    variants={staggerContainer}
-    initial="initial"
-    animate="animate"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3 }}
     className={className}
   >
     {React.Children.map(children, (child, index) => (
       <motion.div
         key={index}
-        variants={fadeInUp}
-        transition={{ delay: index * staggerDelay }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: index * 0.05, duration: 0.2 }}
       >
         {child}
       </motion.div>
@@ -177,8 +177,8 @@ export const Bounce: React.FC<BounceProps> = ({
   className
 }) => (
   <motion.div
-    animate={trigger ? { scale: [1, 1.1, 1] } : {}}
-    transition={{ duration: 0.3, ease: "easeInOut" }}
+    animate={trigger ? { opacity: [1, 0.8, 1] } : {}}
+    transition={{ duration: 0.2 }}
     className={className}
   >
     {children}
@@ -218,10 +218,10 @@ export const SlideModal: React.FC<SlideModalProps> = ({
             className="fixed inset-0 bg-black/50 z-50"
           />
           <motion.div
-            initial={slideVariants[direction]}
-            animate={{ x: 0, y: 0 }}
-            exit={slideVariants[direction]}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
             {children}

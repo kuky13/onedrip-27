@@ -51,63 +51,141 @@ export const AppSidebar = ({
     icon: Users,
     permission: hasRole('admin')
   }];
-  return <Sidebar className={cn("border-r border-border dark:border-white/5", "transition-all duration-300 ease-in-out", "h-screen flex flex-col", isDesktop && "desktop-sidebar")} collapsible="icon">
+  return <Sidebar className={cn(
+    "border-r border-border dark:border-white/5",
+    "transition-all duration-200 ease-in-out",
+    "h-screen flex flex-col",
+    isDesktop && "desktop-sidebar w-[280px] data-[state=collapsed]:w-[60px] shadow-lg data-[state=collapsed]:shadow-md",
+    "bg-card/50"
+  )} collapsible="icon">
       
       
       <AnimatePresence>
         {state === "expanded" && <motion.div initial={{
-        opacity: 0,
-        height: 0
+        opacity: 0
       }} animate={{
-        opacity: 1,
-        height: "auto"
+        opacity: 1
       }} exit={{
-        opacity: 0,
-        height: 0
+        opacity: 0
       }} transition={{
-        duration: 0.3,
-        ease: "easeInOut"
+        duration: 0.15
       }}>
-            <SidebarHeader className={cn("p-4 h-20 flex items-center", isDesktop && "desktop-sidebar-header")}>
-              <div className={cn("flex items-center space-x-4 w-full", isDesktop && "desktop-flex-row")}>
+            <SidebarHeader className={cn(
+              "p-4 h-20 flex items-center border-b border-border/50",
+              "transition-all duration-300 ease-in-out",
+              "data-[state=collapsed]:justify-center",
+              isDesktop && "desktop-sidebar-header px-4 py-4 bg-card/30 min-h-[80px] flex items-center"
+            )}>
+              <motion.div
+                  className={cn(
+                    "flex items-center gap-3 w-full",
+                    "transition-all duration-200 ease-in-out",
+                    isDesktop && "desktop-sidebar-user-info",
+                    state === "collapsed" && "justify-center"
+                  )}
+                  initial={false}
+                  animate={{
+                    opacity: state === "collapsed" ? 0.7 : 1
+                  }}
+                  transition={{ 
+                    duration: 0.2
+                  }}
+                >
                 
-                <motion.div className="flex-1 min-w-0" initial={{
-              opacity: 0,
-              x: -20
-            }} animate={{
-              opacity: 1,
-              x: 0
-            }} transition={{
-              delay: 0.1,
-              duration: 0.2
-            }}>
-                  <p className={cn("text-base font-semibold text-foreground truncate", isDesktop && "desktop-user-name")}>
-                    {profile?.name || 'Usuário'}
-                  </p>
-                  <p className={cn("text-xs text-muted-foreground truncate", isDesktop && "desktop-user-email")}>
-                    {user?.email}
-                  </p>
+                <motion.div className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center text-white font-semibold text-lg shrink-0",
+                  "bg-gradient-to-br from-primary to-primary/80 shadow-lg",
+                  "hover:shadow-xl transition-all duration-200 ease-in-out",
+                  isDesktop && "desktop-avatar w-10 h-10",
+                  state === "collapsed" && "w-8 h-8 text-sm"
+                )} initial={{
+                  opacity: 0
+                }} animate={{
+                  opacity: 1
+                }} transition={{
+                  duration: 0.2
+                }}>
+                  {(profile?.name || user?.email || 'U').charAt(0).toUpperCase()}
                 </motion.div>
-              </div>
+                <motion.div className={cn(
+                  "flex flex-col min-w-0 flex-1 overflow-hidden",
+                  "transition-all duration-200 ease-in-out",
+                  isDesktop && "desktop-sidebar-user-text"
+                )} initial={{
+                  opacity: 0
+                }} animate={{
+                  opacity: state === "collapsed" ? 0 : 1
+                }} transition={{
+                  duration: 0.2
+                }}>
+                  <motion.p className={cn(
+                    "text-sm font-semibold text-foreground truncate leading-tight",
+                    "transition-all duration-200",
+                    isDesktop && "desktop-sidebar-username text-sm font-600",
+                    state === "collapsed" && "opacity-0 pointer-events-none"
+                  )} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ 
+                    duration: 0.2
+                  }}>
+                    {profile?.name || 'Usuário'}
+                  </motion.p>
+                  <motion.p className={cn(
+                    "text-xs text-muted-foreground truncate leading-tight mt-0.5",
+                    "transition-all duration-200",
+                    isDesktop && "desktop-sidebar-email text-xs opacity-80",
+                    state === "collapsed" && "opacity-0 pointer-events-none"
+                  )} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ 
+                    duration: 0.2
+                  }}>
+                    {user?.email}
+                  </motion.p>
+                </motion.div>
+                </motion.div>
             </SidebarHeader>
           </motion.div>}
       </AnimatePresence>
       
       {state === "expanded" && <SidebarSeparator />}
       
-      <SidebarContent className={cn("p-3", isDesktop && "px-4 pt-4 overflow-x-hidden")}>
+      <SidebarContent className={cn(
+        "p-3 flex-1 overflow-y-auto",
+        isDesktop && "px-4 pt-6 overflow-x-hidden desktop-sidebar-content"
+      )}>
         <SidebarMenu className={cn(
-      // mobile: coluna; desktop: linha com wrap
-      "flex flex-col gap-2", isDesktop && "flex-row flex-wrap gap-3")}>
+          "flex flex-col gap-2",
+          isDesktop && "desktop-sidebar-menu flex-col gap-2"
+        )}>
           {navigationItems.map(item => {
           if (!item.permission) return null;
           const Icon = item.icon;
-          return <SidebarMenuItem key={item.id} className={cn("p-1", isDesktop && "p-0")}>
-                <SidebarMenuButton onClick={() => onTabChange(item.id)} isActive={activeTab === item.id} className={cn(
-            // mobile ocupa largura total, desktop vira "chip" horizontal
-            "h-12 text-base font-medium rounded-lg transition-all duration-200 ease-in-out", !isDesktop && "w-full", isDesktop && "w-auto px-3 justify-start gap-3")} tooltip={item.label}>
-                  <Icon className="h-5 w-5" />
-                  <span className={cn("transition-opacity duration-200", state === "collapsed" && "opacity-0")}>{item.label}</span>
+          return <SidebarMenuItem key={item.id} className={cn(
+            "p-1",
+            isDesktop && "desktop-sidebar-item p-0 mb-1"
+          )}>
+                <SidebarMenuButton 
+                  onClick={() => onTabChange(item.id)} 
+                  isActive={activeTab === item.id} 
+                  className={cn(
+                    "h-12 text-base font-medium rounded-lg transition-all duration-200 ease-in-out",
+                    "hover:bg-accent/50 hover:text-accent-foreground",
+                    "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground",
+                    "data-[active=true]:shadow-md",
+                    !isDesktop && "w-full",
+                    isDesktop && "desktop-sidebar-button w-full px-3 py-2 justify-start gap-3 h-11 hover:shadow-md",
+                    activeTab === item.id && "shadow-md"
+                  )} 
+                  tooltip={item.label}
+                >
+                  <Icon className={cn(
+                    "h-5 w-5 transition-all duration-200",
+                    isDesktop && "desktop-sidebar-icon h-4 w-4"
+                  )} />
+                  <span className={cn(
+                    "transition-all duration-200 font-medium",
+                    state === "collapsed" && "opacity-0",
+                    isDesktop && "desktop-sidebar-text text-sm font-500"
+                  )}>
+                    {item.label}
+                  </span>
                 </SidebarMenuButton>
               </SidebarMenuItem>;
         })}

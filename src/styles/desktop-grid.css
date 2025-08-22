@@ -3,46 +3,76 @@
 /* Global Desktop Layout Classes */
 .desktop-horizontal-layout {
   --desktop-sidebar-width: 280px;
+  --desktop-sidebar-collapsed-width: 60px;
   --desktop-header-height: 80px;
-  --desktop-content-padding: 2.5rem;
-  --desktop-grid-gap: 2rem;
-  --desktop-card-min-width: 350px;
-  --desktop-section-spacing: 3.5rem;
-  --desktop-card-padding: 2rem;
-  --desktop-form-gap: 1.5rem;
-  --desktop-button-spacing: 1rem;
+  --desktop-content-padding: 2rem;
+  --desktop-wrapper-padding: 2rem;
+  --desktop-grid-gap: 1.5rem;
+  --desktop-card-min-width: 320px;
+  --desktop-section-spacing: 2.5rem;
+  --desktop-card-padding: 1.5rem;
+  --desktop-form-gap: 1.25rem;
+  --desktop-button-spacing: 0.75rem;
+  --desktop-border-radius: 16px;
+  --desktop-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --desktop-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --desktop-shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --desktop-shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --desktop-transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Enhanced Colors and Shadows */
+  --desktop-bg-color: hsl(var(--background));
+  --desktop-content-bg: hsl(var(--card));
+  --desktop-header-bg: hsl(var(--background) / 0.98);
+  --desktop-border-color: hsl(var(--border) / 0.3);
+  --desktop-accent-color: hsl(var(--primary));
+  --desktop-muted-color: hsl(var(--muted));
+  --desktop-content-shadow: var(--desktop-shadow-md);
+  --desktop-hover-shadow: var(--desktop-shadow-lg);
+  --desktop-card-shadow: var(--desktop-shadow-sm);
+  --desktop-card-hover-shadow: var(--desktop-shadow-md);
 }
 
 /* Desktop Main Container */
 .desktop-main-container {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--desktop-sidebar-width) 1fr;
+  grid-template-rows: 1fr;
+  height: 100vh;
+  width: 100vw;
   gap: 0;
+  overflow: hidden;
+  background: var(--desktop-bg-color);
+  transition: all var(--desktop-transition-duration) var(--desktop-transition-timing);
+  position: relative;
 }
 
 /* Desktop Content Area */
 .desktop-content-area {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  height: 100vh;
   overflow: hidden;
+  background: var(--desktop-content-bg);
+  border-radius: var(--desktop-border-radius) 0 0 0;
+  box-shadow: var(--desktop-content-shadow);
+  transition: all var(--desktop-transition-duration) var(--desktop-transition-timing);
+  position: relative;
+  z-index: 1;
 }
 
-/* Desktop Header Enhancements */
+/* Desktop Header */
 .desktop-header {
+  flex-shrink: 0;
   height: var(--desktop-header-height);
-  padding: 1rem 2rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  border-bottom: 1px solid hsl(var(--border));
-  background: hsl(var(--background) / 0.95);
+  background: var(--desktop-header-bg);
+  border-bottom: 1px solid var(--desktop-border-color);
   backdrop-filter: blur(12px);
+  z-index: 50;
+  transition: all var(--desktop-transition-duration) var(--desktop-transition-timing);
   position: sticky;
   top: 0;
-  z-index: 30;
+  overflow: hidden;
 }
 
 /* Desktop Main Content */
@@ -50,16 +80,41 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  position: relative;
+  padding: var(--desktop-content-padding);
+  background: var(--desktop-content-bg);
+  transition: all var(--desktop-transition-duration) var(--desktop-transition-timing);
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+/* Custom Scrollbar for Webkit browsers */
+.desktop-main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.desktop-main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.desktop-main-content::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.desktop-main-content::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
 /* Desktop Content Wrapper */
 .desktop-content-wrapper {
-  padding: var(--desktop-content-padding);
   max-width: 100%;
   margin: 0 auto;
-  min-height: 100%;
-  container-type: inline-size;
+  padding: var(--desktop-wrapper-padding);
+  transition: all var(--desktop-transition-duration) var(--desktop-transition-timing);
+  min-height: calc(100vh - var(--desktop-header-height));
+  overflow: visible;
 }
 
 /* Desktop Page Content */
@@ -115,17 +170,36 @@
 /* Desktop Card Enhancements */
 .desktop-card {
   background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 12px;
+  border: 1px solid hsl(var(--border) / 0.3);
+  border-radius: var(--desktop-border-radius);
   padding: var(--desktop-card-padding);
-  box-shadow: 0 2px 8px hsl(var(--shadow) / 0.1);
-  transition: all 0.2s ease-in-out;
+  box-shadow: var(--desktop-card-shadow);
+  transition: all var(--desktop-transition);
   margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.desktop-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.3), transparent);
+  opacity: 0;
+  transition: opacity var(--desktop-transition);
 }
 
 .desktop-card:hover {
-  box-shadow: 0 4px 16px hsl(var(--shadow) / 0.15);
+  box-shadow: var(--desktop-card-hover-shadow);
   transform: translateY(-2px);
+  border-color: hsl(var(--border) / 0.5);
+}
+
+.desktop-card:hover::before {
+  opacity: 1;
 }
 
 /* Desktop Section Headers */
@@ -332,9 +406,21 @@
 }
 
 .desktop-sidebar-footer {
-  padding: 1rem;
-  border-top: 1px solid hsl(var(--border));
-  background: hsl(var(--muted) / 0.3);
+  padding: 1.5rem 1rem;
+  border-top: 1px solid hsl(var(--border) / 0.3);
+  background: linear-gradient(180deg, transparent, hsl(var(--muted) / 0.2));
+  transition: all var(--desktop-transition-duration) var(--desktop-transition-timing);
+  position: relative;
+}
+
+.desktop-sidebar-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--border) / 0.5), transparent);
 }
 
 .desktop-avatar {
@@ -492,6 +578,97 @@
 
 .desktop-space-y-lg > * + * {
   margin-top: 2rem;
+}
+
+/* Desktop Responsive Breakpoints */
+@media (max-width: 1400px) {
+  .desktop-horizontal-layout {
+    --desktop-content-padding: 1.5rem;
+    --desktop-grid-gap: 1.25rem;
+    --desktop-card-min-width: 280px;
+    --desktop-section-spacing: 2rem;
+  }
+  
+  .desktop-grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .desktop-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .desktop-horizontal-layout {
+    --desktop-sidebar-width: 260px;
+    --desktop-content-padding: 1.25rem;
+    --desktop-grid-gap: 1rem;
+    --desktop-card-min-width: 260px;
+  }
+  
+  .desktop-grid-4,
+  .desktop-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .desktop-dashboard-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .desktop-header {
+    padding: 1rem 1.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .desktop-horizontal-layout {
+    --desktop-sidebar-width: 240px;
+    --desktop-content-padding: 1rem;
+    --desktop-grid-gap: 0.75rem;
+    --desktop-card-min-width: 240px;
+  }
+  
+  .desktop-grid-4,
+  .desktop-grid-3,
+  .desktop-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .desktop-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  
+  .desktop-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Desktop Container Queries */
+@container (max-width: 800px) {
+  .desktop-grid-auto {
+    grid-template-columns: 1fr;
+  }
+  
+  .desktop-flex-row {
+    flex-direction: column;
+  }
+  
+  .desktop-flex-row > * {
+    min-width: auto;
+  }
+}
+
+@container (max-width: 600px) {
+  .desktop-card {
+    padding: 1rem;
+  }
+  
+  .desktop-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 }
 
 /* Desktop Print Styles */

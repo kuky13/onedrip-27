@@ -33,24 +33,9 @@ export const RippleButton = ({
   size = 'md',
   disabled = false
 }: RippleButtonProps) => {
-  const [ripples, setRipples] = React.useState<Array<{ x: number; y: number; id: number }>>([]);
-
   const handleClick = (e: React.MouseEvent) => {
     if (disabled) return;
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const newRipple = { x, y, id: Date.now() };
-    setRipples(prev => [...prev, newRipple]);
-    
-    simulateHaptic('light');
     onClick?.();
-    
-    setTimeout(() => {
-      setRipples(prev => prev.filter(r => r.id !== newRipple.id));
-    }, 600);
   };
 
   const variants = {
@@ -66,10 +51,10 @@ export const RippleButton = ({
   };
 
   return (
-    <motion.button
+    <button
       className={cn(
-        'relative overflow-hidden rounded-2xl font-medium transition-all duration-200',
-        'transform-gpu active:scale-95',
+        'rounded-2xl font-medium transition-all duration-200 ease-in-out',
+        'hover:opacity-90',
         variants[variant],
         sizes[size],
         disabled && 'opacity-50 cursor-not-allowed',
@@ -77,35 +62,12 @@ export const RippleButton = ({
       )}
       onClick={handleClick}
       disabled={disabled}
-      whileTap={{ scale: 0.95 }}
       style={{
         WebkitTapHighlightColor: 'transparent'
       }}
     >
       {children}
-      
-      {ripples.map(ripple => (
-        <motion.span
-          key={ripple.id}
-          className="absolute bg-white/30 rounded-full pointer-events-none"
-          initial={{ 
-            width: 0, 
-            height: 0, 
-            x: ripple.x, 
-            y: ripple.y,
-            opacity: 0.6
-          }}
-          animate={{ 
-            width: 100, 
-            height: 100, 
-            x: ripple.x - 50, 
-            y: ripple.y - 50,
-            opacity: 0
-          }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        />
-      ))}
-    </motion.button>
+    </button>
   );
 };
 
@@ -124,29 +86,18 @@ export const GlassCard = ({
   onClick 
 }: GlassCardProps) => {
   return (
-    <motion.div
+    <div
       className={cn(
-        'bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl',
-        'shadow-lg hover:shadow-xl transition-all duration-300',
-        hover && 'hover:bg-card/90 hover:border-border/70',
+        'bg-card/80 border border-border/50 rounded-2xl',
+        'shadow-lg transition-all duration-300 ease-in-out',
+        hover && 'hover:bg-card/90 hover:border-border/70 hover:shadow-xl',
         onClick && 'cursor-pointer',
         className
       )}
-      whileHover={hover ? { 
-        scale: 1.02,
-        y: -2,
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
-      } : {}}
-      whileTap={onClick ? { scale: 0.98 } : {}}
       onClick={onClick}
-      style={{
-        WebkitBackfaceVisibility: 'hidden',
-        WebkitPerspective: 1000,
-        WebkitTransform: 'translate3d(0,0,0)'
-      }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
 
@@ -251,22 +202,14 @@ export const BounceBadge = ({
   };
 
   return (
-    <motion.span
+    <span
       className={cn(
-        'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
+        'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-opacity duration-300',
         variants[variant],
         className
       )}
-      initial={animate ? { scale: 0 } : {}}
-      animate={animate ? { scale: 1 } : {}}
-      transition={{ 
-        type: 'spring', 
-        stiffness: 500, 
-        damping: 30,
-        delay: 0.1
-      }}
     >
       {children}
-    </motion.span>
+    </span>
   );
 };

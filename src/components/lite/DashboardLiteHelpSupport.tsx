@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
 import { LifeBuoy, MessageCircle, Sparkles, BookOpen, Video, HelpCircle, ArrowRight, Calendar, RefreshCw, CheckCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react';
-import { IOSHelpSystem } from '@/components/help/IOSHelpSystem';
-import { useIOSOptimization } from '@/hooks/useIOSOptimization';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { openWhatsApp } from '@/utils/whatsappUtils';
+import { useNavigate } from 'react-router-dom';
 
 import { useUserLicenseDetails } from '@/hooks/useUserLicenseDetails';
 
 export const DashboardLiteHelpSupport = () => {
-  const [isHelpSystemOpen, setHelpSystemOpen] = useState(false);
   const [showLicenseCode, setShowLicenseCode] = useState(false);
   const { licenseDetails, loading, error } = useUserLicenseDetails();
-  const {
-    isIOS
-  } = useIOSOptimization();
+  const navigate = useNavigate();
   
   const handleWhatsAppSupport = () => {
     openWhatsApp('https://wa.me/556496028022');
@@ -41,28 +37,8 @@ export const DashboardLiteHelpSupport = () => {
     if (licenseDetails.days_remaining && licenseDetails.days_remaining <= 7) return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
     return <CheckCircle className="h-5 w-5 text-green-500" />;
   };
-  const quickHelpItems = [{
-    id: 'create-budget',
-    title: 'Como criar meu primeiro orçamento?',
-    description: 'Passo a passo completo para criar orçamentos profissionais',
-    icon: BookOpen,
-    category: 'Tutorial'
-  }, {
-    id: 'whatsapp-share',
-    title: 'Como compartilhar via WhatsApp?',
-    description: 'Envie orçamentos automaticamente para seus clientes',
-    icon: MessageCircle,
-    category: 'Básico'
-  }, {
-    id: 'dashboard-guide',
-    title: 'Entendendo o Dashboard',
-    description: 'Aprenda a interpretar métricas e relatórios',
-    icon: Video,
-    category: 'Tutorial'
-  }];
-  const handleQuickHelpClick = (itemId: string) => {
-    setHelpSystemOpen(true);
-    // Aqui você pode passar o contexto específico para o sistema de ajuda
+  const handleHelpClick = () => {
+    navigate('/central-de-ajuda');
   };
   return <>
       <div className="space-y-4">
@@ -150,7 +126,7 @@ export const DashboardLiteHelpSupport = () => {
                   </Button>
                   
                   <Button 
-                    onClick={() => setHelpSystemOpen(true)} 
+                    onClick={handleHelpClick} 
                     variant="outline" 
                     className="w-full bg-muted/30 hover:bg-muted/50 active:bg-muted/70 border-border text-primary py-3 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"
                     style={{
@@ -212,6 +188,6 @@ export const DashboardLiteHelpSupport = () => {
         
       </div>
 
-      <IOSHelpSystem isOpen={isHelpSystemOpen} onClose={() => setHelpSystemOpen(false)} initialContext="dashboard" />
+
     </>;
 };

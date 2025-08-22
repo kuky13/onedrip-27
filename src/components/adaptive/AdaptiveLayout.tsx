@@ -187,7 +187,10 @@ export const AdaptiveLayout = ({ children, activeTab, onTabChange }: AdaptiveLay
           optimized={true}
         >
           <motion.div 
-            className="w-full flex desktop-main-container"
+            className={cn(
+              "w-full flex desktop-main-container",
+              "gap-0 overflow-hidden"
+            )}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
@@ -196,16 +199,18 @@ export const AdaptiveLayout = ({ children, activeTab, onTabChange }: AdaptiveLay
             
             <SidebarInset className={cn(
               "flex-1 flex flex-col min-w-0 desktop-content-area",
-              "transition-all duration-300 ease-in-out"
+              "transition-all duration-300 ease-in-out",
+              "ml-0 border-l-0" // Remove margin and border
             )}>
               <motion.header 
                 className={cn(
-                  "flex shrink-0 items-center gap-6 border-b sticky top-0 z-30 transition-all duration-300",
-                  "desktop-header px-6 py-4", // Enhanced desktop header
+                  "flex shrink-0 items-center justify-between border-b sticky top-0 z-40 transition-all duration-300",
+                  "desktop-header px-8 py-4 h-20", // Enhanced desktop header with consistent height
+                  "bg-background/98 backdrop-blur-xl border-border/50",
                   navHeight,
                   isScrolled 
-                    ? "bg-background/98 backdrop-blur-xl shadow-sm" 
-                    : "bg-background/95 backdrop-blur-sm"
+                    ? "shadow-lg bg-background/99" 
+                    : "shadow-sm bg-background/95"
                 )}
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
@@ -218,23 +223,33 @@ export const AdaptiveLayout = ({ children, activeTab, onTabChange }: AdaptiveLay
                   maxWidth="full"
                 >
                   <motion.div 
-                    className="flex items-center gap-4"
+                    className="flex items-center gap-6"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      delay: 0.1,
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
                     layout
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
                   >
                     <SidebarTrigger className={cn(
-                      "h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-all duration-200",
-                      "hover:scale-110 active:scale-95"
+                      "h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-all duration-200"
                     )} />
-                    <motion.img 
+                    <img 
                       src="/lovable-uploads/logoo.png" 
                       alt="OneDrip" 
-                      className="h-10 w-10" 
-                      whileHover={{ scale: 1.05, rotate: 5 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      className="h-8 w-8" 
                     />
                     <motion.h1 
-                      className="text-2xl font-bold text-foreground"
+                      className="text-2xl font-bold text-foreground tracking-tight"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ 
+                        duration: 0.4, 
+                        delay: 0.2,
+                        ease: [0.4, 0, 0.2, 1]
+                      }}
                       layout
                     >
                       OneDrip
@@ -245,53 +260,60 @@ export const AdaptiveLayout = ({ children, activeTab, onTabChange }: AdaptiveLay
                     className="flex items-center gap-4"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      delay: 0.25,
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
                   >
                     <NotificationIndicator 
                       size="default"
                       className="mr-2"
                     />
-                    <div className="text-sm text-muted-foreground flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      Desktop Mode - Layout Horizontal
-                    </div>
+                    <motion.div 
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2",
+                        "bg-primary/10 text-primary rounded-full",
+                        "border border-primary/20 shadow-sm",
+                        "hover:bg-primary/15 hover:border-primary/30",
+                        "transition-all duration-300"
+                      )}
+                      whileHover={{ 
+                        opacity: 0.9
+                      }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div>
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                      </div>
+                      <span className="font-semibold text-sm tracking-wide">Desktop Mode - Layout Horizontal</span>
+                    </motion.div>
                   </motion.div>
                 </ResponsiveContainer>
               </motion.header>
               
               <main className={cn(
-                "flex-1 overflow-y-auto relative",
-                "scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent",
-                "desktop-main-content", // Desktop-specific main content class
-                "transition-all duration-300 ease-in-out"
+                "flex-1 overflow-y-auto overflow-x-hidden transition-all duration-300",
+                "desktop-main-content bg-muted/20 scroll-smooth", // Enhanced desktop main content
+                "scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
               )}>
-                <ResponsiveContainer 
+                <ResponsiveContainer className={cn(
+                  "desktop-content-wrapper",
+                  "px-8 py-8 min-h-full"
+                )}
                   padding="lg"
                   maxWidth="full"
-                  className={cn(
-                    "min-h-full",
-                    "desktop-content-wrapper", // Wrapper for desktop content
-                    "px-8 py-6", // Enhanced padding for desktop
-                    "transition-all duration-300 ease-in-out"
-                  )}
                 >
                   <AnimatePresence mode="wait">
-                    <motion.div 
+                    <motion.div
                       key={activeTab}
-                      className={cn(
-                        "w-full h-full",
-                        "desktop-page-content", // Desktop page content class
-                        "space-y-6" // Better spacing for desktop
-                      )}
-                      initial={{ opacity: 0, x: 20, scale: 0.98 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
-                      exit={{ opacity: 0, x: -20, scale: 0.98 }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
                       transition={{ 
-                        duration: 0.3, 
-                        ease: "easeInOut",
-                        scale: { type: "spring", stiffness: 300, damping: 30 }
+                        duration: 0.3
                       }}
-                      layout
+                      className="w-full min-h-full flex flex-col"
                     >
                       {children}
                     </motion.div>
@@ -338,10 +360,10 @@ export const AdaptiveLayout = ({ children, activeTab, onTabChange }: AdaptiveLay
               <motion.div 
                 key={activeTab}
                 className="w-full h-full"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 {children}
               </motion.div>

@@ -6,29 +6,29 @@ import { cn } from '@/lib/utils';
 // Transições de página iOS-style
 export const pageTransitions = {
   slideLeft: {
-    initial: { x: '100%', opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    exit: { x: '-100%', opacity: 0 }
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 }
   },
   slideRight: {
-    initial: { x: '-100%', opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    exit: { x: '100%', opacity: 0 }
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 }
   },
   slideUp: {
-    initial: { y: '100%', opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: '100%', opacity: 0 }
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 }
   },
   fadeScale: {
-    initial: { scale: 0.95, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.95, opacity: 0 }
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 }
   },
   elastic: {
-    initial: { scale: 0.8, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    exit: { scale: 0.8, opacity: 0 }
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 }
   }
 };
 
@@ -52,9 +52,6 @@ export const PageTransition = ({
       animate={transition.animate}
       exit={transition.exit}
       transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
         duration: 0.3
       }}
       style={{
@@ -85,10 +82,10 @@ export const RouteTransition = ({
       <motion.div
         key={location}
         className={cn('w-full', className)}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
       >
         {children}
       </motion.div>
@@ -115,7 +112,7 @@ export const ModalTransition = ({
       {isOpen && (
         <>
           <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -124,28 +121,23 @@ export const ModalTransition = ({
           <motion.div
             className={cn(
               'fixed inset-x-4 top-1/2 bg-card rounded-2xl shadow-2xl z-50',
-              'border border-border/50 backdrop-blur-xl',
+              'border border-border/50',
               className
             )}
             initial={{ 
               opacity: 0, 
-              scale: 0.95, 
               y: '-50%' 
             }}
             animate={{ 
               opacity: 1, 
-              scale: 1, 
               y: '-50%' 
             }}
             exit={{ 
               opacity: 0, 
-              scale: 0.95, 
               y: '-50%' 
             }}
             transition={{
-              type: 'spring',
-              stiffness: 400,
-              damping: 30
+              duration: 0.3
             }}
             style={{
               transformOrigin: 'center',
@@ -193,10 +185,10 @@ export const StaggerContainer = ({
         <motion.div
           key={index}
           variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 }
+            hidden: { opacity: 0 },
+            visible: { opacity: 1 }
           }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
+          transition={{ duration: 0.2 }}
         >
           {child}
         </motion.div>

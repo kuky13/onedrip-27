@@ -1,55 +1,30 @@
 /* Professional Desktop Navigation - Hamburger Menu Styles */
 
-/* Enhanced sidebar with modern glass effect */
+/* Simplified sidebar */
 .desktop-sidebar {
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: width 0.3s ease;
   background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-/* Premium hamburger trigger button */
+/* Simplified hamburger trigger button */
 [data-sidebar="trigger"] {
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
 }
 
 [data-sidebar="trigger"]:hover {
-  background: linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.08));
-  border-color: hsl(var(--primary) / 0.3);
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 25px hsl(var(--primary) / 0.2);
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.2);
 }
 
 [data-sidebar="trigger"]:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 4px 15px hsl(var(--primary) / 0.15);
+  background: hsl(var(--primary) / 0.15);
 }
 
-/* Elegant ripple effect for trigger button */
-[data-sidebar="trigger"]::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-  transition: all 0.6s ease-out;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-}
-
-[data-sidebar="trigger"]:hover::before {
-  width: 100px;
-  height: 100px;
-}
+/* Removed ripple effect */
 
 /* Sidebar content animations */
 .desktop-sidebar-content {
@@ -65,74 +40,36 @@
   opacity: 1;
 }
 
-/* Premium menu button hover effects */
+/* Simplified menu button hover effects */
 .desktop-sidebar-button {
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  transition: background-color 0.2s ease;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
 }
 
-/* Sophisticated shimmer effect */
-.desktop-sidebar-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.15), 
-    rgba(255, 255, 255, 0.25),
-    rgba(255, 255, 255, 0.15),
-    transparent
-  );
-  transition: left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  z-index: 1;
-}
-
-.desktop-sidebar-button:hover::before {
-  left: 100%;
-}
-
-/* Enhanced hover state */
+/* Simplified hover state */
 .desktop-sidebar-button:hover {
-  background: linear-gradient(135deg, hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.06));
-  border-color: hsl(var(--primary) / 0.2);
-  transform: translateX(4px) scale(1.02);
-  box-shadow: 0 6px 20px hsl(var(--primary) / 0.15);
+  background: hsl(var(--primary) / 0.08);
+  border-color: hsl(var(--primary) / 0.15);
 }
 
-/* Active state refinement */
+/* Simplified active state */
 .desktop-sidebar-button:active {
-  transform: translateX(2px) scale(0.99);
-  box-shadow: 0 3px 12px hsl(var(--primary) / 0.1);
+  background: hsl(var(--primary) / 0.12);
 }
 
-/* Professional desktop layout optimization */
+/* Simplified desktop layout */
 .desktop-horizontal-layout {
   gap: 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.01), 
-    rgba(255, 255, 255, 0.03)
-  );
 }
 
 .desktop-main-container {
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   min-height: 100vh;
 }
 
-/* Enhanced content area transitions */
+/* Simplified content area */
 .desktop-content-area {
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.02), 
-    rgba(255, 255, 255, 0.01)
-  );
+  background: rgba(255, 255, 255, 0.01);
 }
 
 /* Responsive sidebar width adjustments */
@@ -185,148 +122,201 @@
   transform: translateX(2px);
 }
 
-/* Premium active state indicators */
+/* Simplified active state indicators */
 .desktop-sidebar-item [data-active="true"] {
-  background: linear-gradient(135deg, 
-    hsl(var(--primary) / 0.15), 
-    hsl(var(--primary) / 0.08),
-    hsl(var(--primary) / 0.12)
-  );
-  border: 1px solid hsl(var(--primary) / 0.3);
-  border-left: 4px solid hsl(var(--primary));
+  background: hsl(var(--primary) / 0.1);
+  border: 1px solid hsl(var(--primary) / 0.2);
+  border-left: 3px solid hsl(var(--primary));
   font-weight: 600;
   color: hsl(var(--primary));
-  box-shadow: 
-    0 4px 15px hsl(var(--primary) / 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transform: translateX(2px);
-  position: relative;
 }
 
-/* Active state glow effect */
-.desktop-sidebar-item [data-active="true"]::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, 
-    transparent,
-    hsl(var(--primary) / 0.1),
-    transparent
-  );
-  border-radius: inherit;
-  animation: activeGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes activeGlow {
-  0% { opacity: 0.5; }
-  100% { opacity: 1; }
-}
-
-/* Premium icon animations */
+/* Simplified icon animations */
 .desktop-sidebar-button svg {
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: color 0.2s ease;
 }
 
 .desktop-sidebar-button:hover svg {
-  transform: scale(1.15) rotate(5deg);
-  filter: drop-shadow(0 4px 8px hsl(var(--primary) / 0.2));
   color: hsl(var(--primary));
 }
 
-.desktop-sidebar-button:active svg {
-  transform: scale(1.05) rotate(2deg);
-  transition: all 0.15s ease-out;
-}
-
-/* Icon glow effect for active items */
+/* Simplified active item icons */
 .desktop-sidebar-item [data-active="true"] svg {
   color: hsl(var(--primary));
-  filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
-  animation: iconPulse 2s ease-in-out infinite alternate;
 }
 
-@keyframes iconPulse {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.05); }
-}
-
-/* Premium footer styling */
+/* Simplified footer styling */
 .desktop-sidebar-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(to bottom, 
-    transparent, 
-    rgba(255, 255, 255, 0.02),
-    rgba(255, 255, 255, 0.05)
-  );
-  backdrop-filter: blur(10px);
   padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.01);
 }
 
-/* Sophisticated user avatar */
+/* Simplified user avatar */
 .desktop-avatar {
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  background: linear-gradient(135deg, 
-    hsl(var(--primary) / 0.15), 
-    hsl(var(--primary) / 0.08)
-  );
-  border: 2px solid hsl(var(--primary) / 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.desktop-avatar::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.1), 
-    transparent
-  );
-  transform: rotate(45deg);
-  transition: all 0.6s ease;
-  opacity: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: border-color 0.2s ease;
 }
 
 .desktop-avatar:hover {
-  transform: scale(1.08) rotate(2deg);
-  box-shadow: 
-    0 8px 25px hsl(var(--primary) / 0.3),
-    0 0 0 3px hsl(var(--primary) / 0.1);
-  border-color: hsl(var(--primary) / 0.4);
+  border-color: hsl(var(--primary) / 0.3);
 }
 
-.desktop-avatar:hover::before {
-  opacity: 1;
-  transform: rotate(45deg) translate(50%, 50%);
-}
-
-/* Sophisticated text animations for state transitions */
+/* Simplified text animations for state transitions */
 [data-state="collapsed"] .desktop-user-name,
 [data-state="collapsed"] .desktop-user-email {
   opacity: 0;
-  transform: translateX(-15px) scale(0.95);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  filter: blur(2px);
 }
 
 [data-state="expanded"] .desktop-user-name,
 [data-state="expanded"] .desktop-user-email {
   opacity: 1;
-  transform: translateX(0) scale(1);
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s;
-  filter: blur(0px);
 }
 
-/* Enhanced typography for user info */
+/* Simplified typography for user info */
 .desktop-user-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+.desktop-user-email {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.8;
+}
+
+/* ===== MOBILE HAMBURGER MENU STYLES ===== */
+
+/* Simplified mobile menu backdrop */
+.mobile-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  transition: opacity 0.3s ease;
+}
+
+/* Simplified mobile menu panel */
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 280px;
+  background: rgba(0, 0, 0, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 51;
+  overflow-y: auto;
+}
+
+/* Simplified mobile menu header */
+.mobile-menu-header {
+  padding: 1.5rem 1rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Simplified mobile user profile section */
+.mobile-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin: 0.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.mobile-user-profile:hover {
+  background: hsl(var(--primary) / 0.08);
+  border-color: hsl(var(--primary) / 0.15);
+}
+
+/* Simplified mobile avatar */
+.mobile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 0.2s ease;
+}
+
+.mobile-user-profile:hover .mobile-avatar {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* Simplified mobile search bar */
+.mobile-search-container {
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+}
+
+.mobile-search-bar {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  transition: border-color 0.2s ease;
+}
+
+.mobile-search-bar:focus {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* Simplified mobile navigation items */
+.mobile-nav-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  margin: 0.5rem 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-nav-item:hover {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.15);
+}
+
+.mobile-nav-item:active {
+  background: hsl(var(--primary) / 0.15);
+}
+
+/* Simplified mobile navigation icons */
+.mobile-nav-icon {
+  transition: color 0.2s ease;
+}
+
+.mobile-nav-item:hover .mobile-nav-icon {
+  color: hsl(var(--primary));
+}
+
+/* Simplified mobile logout button */
+.mobile-logout-button {
+  margin: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-logout-button:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.mobile-logout-button:active {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Mobile typography enhancements */
+.mobile-user-name {
   font-weight: 600;
   letter-spacing: -0.025em;
   background: linear-gradient(135deg, 
@@ -337,10 +327,21 @@
   -webkit-background-clip: text;
 }
 
-.desktop-user-email {
+.mobile-user-email {
   font-weight: 400;
   letter-spacing: 0.025em;
-  color: hsl(var(--muted-foreground) / 0.8);
+  color: hsl(var(--muted-foreground) / 0.7);
+}
+
+.mobile-nav-text {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mobile-nav-item:hover .mobile-nav-text {
+  color: hsl(var(--primary));
+  font-weight: 600;
 }
 
 /* Mobile responsiveness */
@@ -350,5 +351,51 @@
   .desktop-sidebar-button,
   .desktop-main-container {
     transition: none;
+  }
+  
+  /* Ensure mobile menu takes full height */
+  .mobile-menu-panel {
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  /* Optimize mobile animations for performance */
+  .mobile-nav-item,
+  .mobile-user-avatar,
+  .mobile-search-bar {
+    will-change: transform;
+  }
+}
+
+/* Dark mode support for mobile menu */
+@media (prefers-color-scheme: dark) {
+  .mobile-menu-panel {
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95), 
+      rgba(0, 0, 0, 0.98)
+    );
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-user-profile {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.05), 
+      rgba(255, 255, 255, 0.02)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-nav-item {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.08), 
+      rgba(255, 255, 255, 0.04)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-search-bar {
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.1);
   }
 }
