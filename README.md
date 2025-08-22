@@ -2,7 +2,7 @@
 <div align="center">
   <img src="/public/lovable-uploads/logoo.png" alt="OneDrip Logo" width="120" height="120">
   
-  # OneDrip - Sistema de Gestão Profissional
+  # OneDrip
 
   ### *Plataforma completa para assistências técnicas modernas*
   
