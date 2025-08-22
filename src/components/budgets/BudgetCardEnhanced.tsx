@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { MessageCircle, FileText, Edit, Trash2, Clock, Eye, DollarSign, Calendar, User, Smartphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BudgetStatusBadge } from './BudgetStatusBadge';
-import { BudgetWorkflowActions } from './BudgetWorkflowActions';
+
 import { useAdvancedBudgets } from '@/hooks/useAdvancedBudgets';
 import { useLayout } from '@/contexts/LayoutContext';
 
@@ -185,24 +185,7 @@ export const BudgetCardEnhanced = ({
           </div>
         </div>
 
-        {/* Workflow Actions - Advanced Features */}
-        {isAdvancedMode && (
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">Ações do Workflow:</p>
-            <BudgetWorkflowActions 
-              budget={{
-                id: budget.id,
-                workflow_status: budget.workflow_status || 'pending',
-                is_paid: budget.is_paid || false,
-                is_delivered: budget.is_delivered || false,
-                expires_at: budget.expires_at,
-                approved_at: budget.approved_at,
-                payment_confirmed_at: budget.payment_confirmed_at,
-                delivery_confirmed_at: budget.delivery_confirmed_at,
-              }}
-            />
-          </div>
-        )}
+
 
         <Separator className="my-4" />
 

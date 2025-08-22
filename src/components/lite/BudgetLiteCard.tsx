@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, FileText, Edit, Trash2, RefreshCw } from 'lucide-react';
 import { BudgetLiteStatusBadge } from './BudgetLiteStatusBadge';
-import { BudgetLiteWorkflowActions } from './BudgetLiteWorkflowActions';
 import { BudgetLiteActionDialog } from './BudgetLiteActionDialog';
 import { MiniToastWithArrow } from './MiniToastWithArrow';
 import { useIOSRefresh } from '@/hooks/useIOSRefresh';
@@ -180,20 +179,7 @@ export const BudgetLiteCard = ({
         <div className="w-full h-px bg-gray-700 mt-3"></div>
       </div>
 
-      {/* Workflow Actions Section */}
-      {profile?.advanced_features_enabled && <div className="mb-4">
-          <p className="text-sm text-gray-400 font-medium mb-2">Ações:</p>
-          <BudgetLiteWorkflowActions budget={{
-        id: localBudget.id,
-        workflow_status: localBudget.workflow_status || 'pending',
-        is_paid: localBudget.is_paid || false,
-        is_delivered: localBudget.is_delivered || false,
-        expires_at: localBudget.expires_at,
-        approved_at: localBudget.approved_at,
-        payment_confirmed_at: localBudget.payment_confirmed_at,
-        delivery_confirmed_at: localBudget.delivery_confirmed_at
-      }} onBudgetUpdate={handleBudgetUpdate} />
-        </div>}
+
 
       {/* Action Icons */}
       <div className="flex justify-center gap-8 pt-4">

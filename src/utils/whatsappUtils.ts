@@ -17,30 +17,33 @@ export const generateWhatsAppMessage = (budgetOrTitle: any, description?: string
 
   // New usage with budget object
   const budget = budgetOrTitle;
-  let message = `🔧 *Orçamento de Reparo*\n\n`;
-  message += `📱 *Aparelho:* ${budget.device_model || 'Não informado'}\n`;
-  message += `🔧 *Serviço:* ${budget.part_type || 'Reparo'}\n`;
-  message += `⭐ *Qualidade:* ${budget.part_quality || 'Original'}\n\n`;
+  let message = `● *Criado em:* ${new Date(budget.created_at).toLocaleDateString('pt-BR')}\n`;
+  
+  if (budget.valid_until) {
+    message += `● *Válido até:* ${new Date(budget.valid_until).toLocaleDateString('pt-BR')}\n`;
+  }
+  
+  message += `\n*Aparelho:* ${budget.device_model || 'Não informado'}\n`;
+  message += `*Qualidade da peça:* ${budget.part_quality || 'Original'}\n`;
+  
+  message += `\n💰 *VALORES*\n`;
   
   if (budget.cash_price) {
-    message += `💰 *Valor à vista:* R$ ${(budget.cash_price / 100).toFixed(2)}\n`;
+    message += `• *Total:* R$ ${(budget.cash_price / 100).toFixed(2).replace('.', ',')}\n`;
   }
   
   if (budget.installment_price && budget.installments > 1) {
-    message += `💳 *Parcelado:* ${budget.installments}x de R$ ${(budget.installment_price / 100).toFixed(2)}\n`;
+    message += `• *Parcelado:* R$ ${(budget.installment_price / 100).toFixed(2).replace('.', ',')} em até ${budget.installments}x no cartão\n`;
   }
   
-  if (budget.warranty_months) {
-    message += `🛡️ *Garantia:* ${budget.warranty_months} meses\n`;
-  }
+  message += `\n✅️ *Garantia:* ${budget.warranty_months || 3} meses\n`;
+  message += `🚫 *Não cobre danos por água ou quedas*\n`;
   
-  message += `\n📅 *Criado em:* ${new Date(budget.created_at).toLocaleDateString('pt-BR')}`;
+  message += `\n📦 *Serviços inclusos:*\n`;
+  message += `▪︎ Busca e entrega\n`;
+  message += `▪︎ Película 3D de brinde`;
   
-  if (budget.valid_until) {
-    message += `\n⏰ *Válido até:* ${new Date(budget.valid_until).toLocaleDateString('pt-BR')}`;
-  }
-  
-  return encodeURIComponent(message);
+  return message;
 };
 
 export const shareViaWhatsApp = (url: string, text?: string): void => {

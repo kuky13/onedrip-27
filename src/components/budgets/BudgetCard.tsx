@@ -11,7 +11,6 @@ import { useLayout } from '@/contexts/LayoutContext';
 import { useResponsive } from '@/hooks/useResponsive';
 import { cn } from '@/lib/utils';
 import { BudgetStatusBadge } from './BudgetStatusBadge';
-import { BudgetWorkflowActions } from './BudgetWorkflowActions';
 import { useAdvancedBudgets } from '@/hooks/useAdvancedBudgets';
 
 interface BudgetCardProps {
@@ -58,12 +57,13 @@ export const BudgetCard = ({
 
   return (
     <Card className={cn(
-      "glass-card border-0 shadow-md bg-white/50 dark:bg-black/50 backdrop-blur-xl transition-all duration-200 hover:shadow-lg",
+      "group relative overflow-hidden border border-border/50 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-xl transition-all duration-300 hover:shadow-strong hover:border-primary/20 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-card/90 hover:to-card/70",
       budget.deleted_at && "opacity-50 pointer-events-none",
-      isDesktop && "desktop-card"
+      isDesktop && "desktop-card",
+      "shadow-soft hover:shadow-medium"
     )}>
       <CardContent className={cn(
-        "p-4 space-y-4",
+        "relative p-6 space-y-5",
         isDesktop && "desktop-content desktop-flex-row desktop-card-content"
       )}>
         {/* Header com checkbox e data */}
@@ -73,16 +73,16 @@ export const BudgetCard = ({
         )}>
           <div className="flex items-center gap-3">
             <div>
-              <h3 className="font-bold text-lg text-foreground">
+              <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors duration-200">
                 {budget.device_model || 'Dispositivo não informado'}
               </h3>
-              <Badge variant="outline" className="text-xs mt-1">
+              <Badge variant="outline" className="text-xs mt-1 border-primary/30 text-primary/80 bg-primary/5 hover:bg-primary/10 transition-colors">
                 {budget.device_type || 'Tipo não informado'}
               </Badge>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground/80 font-medium">
               {budget.created_at ? new Date(budget.created_at).toLocaleDateString('pt-BR') : 'Data não informada'}
             </span>
             {profile?.budget_warning_enabled && budget.created_at && isBudgetOld(budget.created_at, profile.budget_warning_days) && (
@@ -103,7 +103,9 @@ export const BudgetCard = ({
         {/* Informações do cliente */}
         {budget.client_name && (
           <div>
-            <p className="text-sm text-primary/80 font-semibold">Cliente: {budget.client_name}</p>
+            <p className="text-sm text-primary font-semibold bg-primary/5 px-3 py-1.5 rounded-md border border-primary/20">
+              Cliente: {budget.client_name}
+            </p>
           </div>
         )}
 
@@ -121,47 +123,29 @@ export const BudgetCard = ({
 
         {/* Problema/Issue */}
         <div>
-          <p className="text-sm text-muted-foreground font-medium">Serviço:</p>
-          <p className="text-sm">{budget.issue || 'Problema não informado'}</p>
+          <p className="text-sm text-muted-foreground font-medium mb-1">Serviço:</p>
+          <p className="text-sm text-foreground/90 bg-muted/30 p-3 rounded-md border border-border/50">
+            {budget.issue || 'Problema não informado'}
+          </p>
         </div>
 
-        <Separator />
+        <Separator className="bg-gradient-to-r from-transparent via-border to-transparent" />
 
         {/* Preço */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-bold text-xl text-foreground">
+            <p className="font-bold text-2xl bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
               R$ {((budget.total_price || 0) / 100).toLocaleString('pt-BR', {
                 minimumFractionDigits: 2
               })}
             </p>
             {budget.installments > 1 && (
-              <p className="text-xs text-muted-foreground">{budget.installments}x</p>
+              <p className="text-xs text-muted-foreground/70 font-medium">{budget.installments}x</p>
             )}
           </div>
         </div>
 
-        {/* Ações do Workflow - Funcionalidades Avançadas */}
-        {isAdvancedMode && (
-          <>
-            <Separator />
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Ações:</p>
-              <BudgetWorkflowActions 
-                budget={{
-                  id: budget.id,
-                  workflow_status: budget.workflow_status || 'pending',
-                  is_paid: budget.is_paid || false,
-                  is_delivered: budget.is_delivered || false,
-                  expires_at: budget.expires_at,
-                  approved_at: budget.approved_at,
-                  payment_confirmed_at: budget.payment_confirmed_at,
-                  delivery_confirmed_at: budget.delivery_confirmed_at,
-                }}
-              />
-            </div>
-          </>
-        )}
+
 
         <Separator />
 

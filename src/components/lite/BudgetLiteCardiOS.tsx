@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { generateWhatsAppMessage, shareViaWhatsApp } from '@/utils/whatsappUtils';
+import { generateBudgetPDF, type CompanyData } from '@/utils/pdfUtils';
 import { MessageCircle, FileText, Edit, Trash2, Eye, Share } from 'lucide-react';
 import { BudgetLiteStatusBadge } from './BudgetLiteStatusBadge';
-import { BudgetLiteWorkflowActions } from './BudgetLiteWorkflowActions';
+
 import { BudgetEditFormIOS } from './BudgetEditFormIOS';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 import { supabase } from '@/integrations/supabase/client';
 import { useShopProfile } from '@/hooks/useShopProfile';
+import { useCompanyBranding } from '@/hooks/useCompanyBranding';
 import { useIOSFeedback } from './IOSFeedback';
 
 interface Budget {
@@ -48,10 +50,12 @@ export const BudgetLiteCardiOS = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const {
     shopProfile
   } = useShopProfile();
+  const { companyInfo } = useCompanyBranding();
   const {
     hapticFeedback,
     showSuccessAction,
@@ -154,6 +158,48 @@ export const BudgetLiteCardiOS = ({
     }
   };
 
+  const handleGeneratePDF = async () => {
+    if (isGeneratingPDF) return;
+    
+    setIsGeneratingPDF(true);
+    try {
+      hapticFeedback('light');
+      showProgressAction('Gerando PDF...');
+      
+      // Preparar dados do orçamento seguindo a interface BudgetData
+      const pdfData = {
+        id: budget.id,
+        device_model: budget.device_model || 'Dispositivo não informado',
+        piece_quality: budget.part_quality || budget.part_type || 'Não informado',
+        total_price: (budget.cash_price || budget.total_price || 0) / 100, // Converter de centavos para reais
+        installment_price: budget.installment_price ? budget.installment_price / 100 : undefined,
+        installment_count: budget.installments || 1,
+        created_at: budget.created_at,
+        validity_date: budget.expires_at || new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+        warranty_months: 12,
+        notes: budget.issue
+      };
+      
+      // Preparar dados da empresa
+      const companyData: CompanyData = {
+        shop_name: shopProfile?.shop_name || companyInfo?.name,
+        address: shopProfile?.address || companyInfo?.address,
+        contact_phone: shopProfile?.contact_phone || companyInfo?.phone,
+        logo_url: shopProfile?.logo_url || companyInfo?.logoUrl,
+        email: companyInfo?.email,
+        cnpj: shopProfile?.cnpj
+      };
+      
+      await generateBudgetPDF(pdfData, companyData);
+      showSuccessAction('PDF gerado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      showErrorAction('Não foi possível gerar o PDF');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   return <div className="bg-card border border-border rounded-2xl p-5 shadow-soft transition-all duration-200 active:scale-[0.98]" style={{
     // Otimizações para performance no iOS
     transform: 'translateZ(0)',
@@ -234,21 +280,7 @@ export const BudgetLiteCardiOS = ({
           </div>
         </div>
 
-        {/* Status de Pagamento e Entrega */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-muted/20 rounded-lg p-3">
-            <p className="text-xs text-muted-foreground font-medium mb-1">PAGAMENTO:</p>
-            <p className={`text-sm font-medium ${budget.is_paid ? 'text-green-600' : 'text-orange-600'}`}>
-              {budget.is_paid ? 'PAGO' : 'PENDENTE'}
-            </p>
-          </div>
-          <div className="bg-muted/20 rounded-lg p-3">
-            <p className="text-xs text-muted-foreground font-medium mb-1">ENTREGA:</p>
-            <p className={`text-sm font-medium ${budget.is_delivered ? 'text-green-600' : 'text-orange-600'}`}>
-              {budget.is_delivered ? 'ENTREGUE' : 'PENDENTE'}
-            </p>
-          </div>
-        </div>
+
 
         {/* Datas Importantes */}
         <div className="space-y-2">
@@ -261,28 +293,15 @@ export const BudgetLiteCardiOS = ({
         </div>
       </div>
 
-      {/* Workflow Actions Section */}
-      {profile?.advanced_features_enabled && <div className="mb-6">
-          <p className="text-sm text-muted-foreground font-medium mb-3">Ações:</p>
-          <BudgetLiteWorkflowActions budget={{
-        id: budget.id,
-        workflow_status: budget.workflow_status as any || 'pending',
-        is_paid: budget.is_paid || false,
-        is_delivered: budget.is_delivered || false,
-        expires_at: budget.expires_at,
-        approved_at: budget.approved_at,
-        payment_confirmed_at: budget.payment_confirmed_at,
-        delivery_confirmed_at: budget.delivery_confirmed_at
-      }} onBudgetUpdate={onBudgetUpdate} />
-        </div>}
+
 
       {/* Action Buttons - Diretas e intuitivas para iOS */}
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-center gap-3 pt-4">
         {/* WhatsApp - Ação direta */}
         <button 
           onClick={handleWhatsAppShare} 
-          disabled={false}
-          className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-3 px-6 rounded-xl font-medium transition-all duration-200 active:scale-95" 
+          disabled={isSharing}
+          className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200 active:scale-95" 
           style={{
             minHeight: '48px',
             touchAction: 'manipulation',
@@ -290,7 +309,26 @@ export const BudgetLiteCardiOS = ({
           }}
         >
           <MessageCircle className="h-5 w-5 flex-shrink-0" />
-          <span className="text-sm font-medium">Compartilhar no WhatsApp</span>
+          <span className="text-sm font-medium">
+            {isSharing ? 'Compartilhando...' : 'WhatsApp'}
+          </span>
+        </button>
+
+        {/* PDF - Ação direta */}
+        <button 
+          onClick={handleGeneratePDF} 
+          disabled={isGeneratingPDF}
+          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200 active:scale-95" 
+          style={{
+            minHeight: '48px',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent'
+          }}
+        >
+          <FileText className="h-5 w-5 flex-shrink-0" />
+          <span className="text-sm font-medium">
+            {isGeneratingPDF ? 'Gerando...' : 'PDF'}
+          </span>
         </button>
       </div>
 
