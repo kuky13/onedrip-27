@@ -6,7 +6,8 @@ import { useEnhancedLicenseValidation } from '@/hooks/useEnhancedLicenseValidati
 import { MobileLoading } from '@/components/ui/mobile-loading';
 import { SecurityValidation } from '@/utils/securityValidation';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { performanceMonitor } from '@/utils/preventReloads';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -16,15 +17,26 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
   const { user, loading, profile, isInitialized } = useAuth();
   const { data: licenseData, isLoading: licenseLoading } = useEnhancedLicenseValidation();
   const [emailCheckLoading, setEmailCheckLoading] = useState(false);
-
-  console.log('🛡️ AuthGuard - Estado:', { 
-    user: !!user, 
-    loading, 
-    isInitialized, 
-    emailConfirmed: !!user?.email_confirmed_at,
-    licenseValid: licenseData?.is_valid,
-    licenseLoading
+  const renderCountRef = useRef(0);
+  
+  // Monitor de performance
+  useEffect(() => {
+    renderCountRef.current++;
+    performanceMonitor.recordRender('AuthGuard');
   });
+
+  // Console log apenas durante desenvolvimento e com debounce
+  const shouldLog = import.meta.env.DEV && Date.now() % 5000 < 100;
+  if (shouldLog) {
+    console.log('🛡️ AuthGuard - Estado:', { 
+      user: !!user, 
+      loading, 
+      isInitialized, 
+      emailConfirmed: !!user?.email_confirmed_at,
+      licenseValid: licenseData?.is_valid,
+      licenseLoading
+    });
+  }
 
   // Aguardar inicialização completa antes de tomar decisões
   if (loading || !isInitialized) {

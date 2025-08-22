@@ -46,7 +46,11 @@ class ClientRateLimit {
   }
 
   private startCleanupTimer() {
-    setInterval(() => this.cleanup(), 60000); // Limpeza a cada minuto
+    // Limpeza apenas quando necessário, não constantemente
+    if (!window.__RATE_LIMIT_CLEANUP__) {
+      window.__RATE_LIMIT_CLEANUP__ = true;
+      setInterval(() => this.cleanup(), 5 * 60000); // Limpeza a cada 5 minutos
+    }
   }
 
   private cleanup() {

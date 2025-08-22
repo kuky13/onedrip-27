@@ -49,10 +49,20 @@ export const useEnhancedLicenseValidation = () => {
   };
 
   useEffect(() => {
+    // Apenas validar se tiver usuário
+    if (!user?.id) {
+      setData({ has_license: false, is_valid: false, message: 'Usuário não autenticado' });
+      return;
+    }
+
     validateLicense();
     
-    // Revalidar a cada 5 minutos
-    const interval = setInterval(validateLicense, 1000 * 60 * 5);
+    // Revalidar a cada 10 minutos (reduzir frequência)
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        validateLicense();
+      }
+    }, 1000 * 60 * 10);
     
     return () => clearInterval(interval);
   }, [user?.id]);

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { AcceptTermsModal, useTermsAcceptance } from "@/components/AcceptTermsModal";
+import { ReloadMonitor } from "@/components/ReloadMonitor";
 import Index from "./pages/Index";
 import { AuthPage } from "./pages/AuthPage";
 import { SignUpPage } from "./pages/SignUpPage";
@@ -88,6 +89,7 @@ const AppContent = () => {
 
   return (
     <>
+      <ReloadMonitor />
       <SecurityHeaders />
       <Toaster />
       <Sonner

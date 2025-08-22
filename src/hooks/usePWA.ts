@@ -88,11 +88,15 @@ export const usePWA = (): PWAState & PWAActions => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Service Worker registration
-    if ('serviceWorker' in navigator) {
+    // Service Worker registration (apenas uma vez)
+    if ('serviceWorker' in navigator && !window.__SW_REGISTERED__) {
+      window.__SW_REGISTERED__ = true;
+      
       navigator.serviceWorker.register('/sw.js')
         .then(registration => {
-          console.log('SW registrado:', registration);
+          if (import.meta.env.DEV) {
+            console.log('SW registrado:', registration.scope);
+          }
           
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
@@ -107,6 +111,7 @@ export const usePWA = (): PWAState & PWAActions => {
         })
         .catch(error => {
           console.error('Erro no registro do SW:', error);
+          window.__SW_REGISTERED__ = false;
         });
     }
 
@@ -145,10 +150,13 @@ export const usePWA = (): PWAState & PWAActions => {
       if (registration && registration.waiting) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
         
-        // Navegar para home após update
+        // Navegar para home após update (apenas uma vez)
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-          window.location.href = '/';
-        });
+          if (!window.__CONTROLLER_CHANGED__) {
+            window.__CONTROLLER_CHANGED__ = true;
+            setTimeout(() => window.location.reload(), 100);
+          }
+        }, { once: true });
       }
     } catch (error) {
       console.error('Erro na atualização:', error);
