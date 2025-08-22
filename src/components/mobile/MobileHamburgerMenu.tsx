@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { X, LogOut, Search, User, ChevronRight } from 'lucide-react';
+import { X, LogOut, Search, User, ChevronRight, HelpCircle } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,7 @@ export const MobileHamburgerMenu = ({
   onLogout 
 }: MobileHamburgerMenuProps) => {
   const [searchQuery, setSearchQuery] = React.useState('');
+  const navigate = useNavigate();
 
   // iOS-style swipe to close gesture
   useSwipeGesture({
@@ -144,9 +146,18 @@ export const MobileHamburgerMenu = ({
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <div className="w-4 h-4 bg-primary-foreground rounded-sm" />
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    onClose();
+                    navigate('/central-de-ajuda');
+                  }}
+                  className="w-8 h-8 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-colors touch-manipulation ios-tap-highlight-none"
+                  aria-label="Central de ajuda"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </Button>
                 <h2 className="text-lg font-semibold text-foreground">Menu</h2>
               </div>
               <Button
