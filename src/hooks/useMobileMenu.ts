@@ -40,7 +40,7 @@ export const useMobileMenu = () => {
           { id: 'budgets', label: 'Orçamentos', icon: 'FileText', permission: 'view_own_budgets' },
           { id: 'new-budget', label: 'Novo Orçamento', icon: 'Plus', permission: 'create_budgets' },
           { id: 'clients', label: 'Clientes', icon: 'UserCheck' },
-          { id: 'service-orders-trash', label: 'Lixeira de Ordens', icon: 'Trash2', permission: 'view_own_budgets' },
+          { id: 'help-center', label: 'Central de Ajuda', icon: 'HelpCircle' },
           { id: 'data-management', label: 'Gestão de Dados', icon: 'Database' },
           { id: 'admin', label: 'Administração', icon: 'Users', permission: 'manage_users' },
           { id: 'settings', label: 'Configurações', icon: 'Settings' },

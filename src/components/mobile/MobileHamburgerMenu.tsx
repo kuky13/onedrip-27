@@ -85,6 +85,11 @@ export const MobileHamburgerMenu = ({
   }, [isOpen, onClose]);
 
   const handleTabChange = (tab: string) => {
+    if (tab === 'help-center') {
+      onClose();
+      navigate('/central-de-ajuda');
+      return;
+    }
     onTabChange(tab);
     onClose();
   };
