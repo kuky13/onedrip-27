@@ -24,7 +24,7 @@ INSERT INTO site_settings (
   15,
   'R$',
   '/mês',
-  '["Sistema completo de orçamentos", "Gestão de clientes ilimitada", "Relatórios e estatísticas", "Cálculos automáticos", "Controle de dispositivos", "Suporte técnico incluso", "Atualizações gratuitas", "Backup automático"]',
+  '["Sistema completo de orçamentos", "Gestão de clientes ilimitada", "Cálculos automáticos", "Controle de dispositivos", "Suporte técnico incluso", "Atualizações gratuitas", "Backup automático"]',
   '556496028022',
   'Escolha seu Plano',
   'Tenha acesso completo ao sistema de gestão de orçamentos mais eficiente para assistências técnicas.',

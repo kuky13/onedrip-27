@@ -28,7 +28,6 @@ export const PLANS_CONTENT = {
       beneficios: [
         "Sistema completo de orçamentos",
         "Gestão de clientes ilimitada", 
-        "Relatórios e estatísticas",
         "Cálculos automáticos",
         "Controle de dispositivos",
         "Suporte técnico incluso",
@@ -52,7 +51,6 @@ export const PLANS_CONTENT = {
       beneficios: [
         "Sistema completo de orçamentos",
         "Gestão de clientes ilimitada", 
-        "Relatórios e estatísticas",
         "Cálculos automáticos",
         "Controle de dispositivos",
         "Suporte técnico incluso",

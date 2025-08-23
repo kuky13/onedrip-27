@@ -166,7 +166,7 @@ export const PlansPage = () => {
         plan_price: settings?.plan_price || 45,
         plan_currency: settings?.plan_currency || 'R$',
         plan_period: settings?.plan_period || '/mês',
-        plan_features: (settings?.plan_features as string[]) || ["Sistema completo de orçamentos", "Gestão de clientes ilimitada", "Relatórios e estatísticas", "Cálculos automáticos", "Controle de dispositivos", "Suporte técnico incluso", "Atualizações gratuitas", "Backup automático"],
+        plan_features: (settings?.plan_features as string[]) || ["Sistema completo de orçamentos", "Gestão de clientes ilimitada", "Cálculos automáticos", "Controle de dispositivos", "Suporte técnico incluso", "Atualizações gratuitas", "Backup automático"],
         whatsapp_number: settings?.whatsapp_number || '556496028022',
         page_title: settings?.page_title || 'Escolha seu Plano',
         page_subtitle: settings?.page_subtitle || 'Tenha acesso completo ao sistema de gestão de orçamentos mais eficiente para assistências técnicas.',
