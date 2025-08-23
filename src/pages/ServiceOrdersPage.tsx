@@ -15,6 +15,7 @@ import { useServiceOrderShare } from '../hooks/useServiceOrderShare';
 import { useSecureServiceOrders } from '@/hooks/useSecureServiceOrders';
 import { useContextualActions } from '@/hooks/useContextualActions';
 import { useAuth } from '@/hooks/useAuth';
+import { openWhatsApp } from '@/utils/whatsappUtils';
 import { Tables, Enums } from '@/integrations/supabase/types';
 
 type ServiceOrder = Tables<'service_orders'>;
@@ -23,7 +24,7 @@ type ServiceOrderPriority = Enums<'service_order_priority'>;
 const ServiceOrdersPage: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
@@ -195,6 +196,26 @@ const ServiceOrdersPage: React.FC = () => {
           </p>
           <Button onClick={() => navigate('/auth')} className="bg-primary hover:bg-primary/90 text-primary-foreground">
             Fazer Login
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Verificar se o usuário tem acesso VIP
+  if (user && !profile?.service_orders_vip_enabled) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
+            <Wrench className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">Ordens de Serviço (VIP)</h1>
+          <p className="text-muted-foreground mb-6">
+            Esta funcionalidade é para usuarios VIP. Entre em contato com o suporte para solicitar acesso.
+          </p>
+          <Button onClick={() => navigate(-1)} className="w-full">
+            Voltar
           </Button>
         </div>
       </div>

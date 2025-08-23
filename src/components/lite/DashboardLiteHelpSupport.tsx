@@ -18,8 +18,11 @@ export const DashboardLiteHelpSupport = () => {
   };
 
   const handleRenewLicense = () => {
-    const message = 'Olá! Gostaria de renovar minha licença do sistema OneDrip.';
-    openWhatsApp(`https://wa.me/556496028022?text=${encodeURIComponent(message)}`);
+    const message = licenseDetails?.license_code 
+      ? `Olá! Gostaria de renovar minha licença do sistema OneDrip. Código da licença: ${licenseDetails.license_code}`
+      : 'Olá! Gostaria de renovar minha licença do sistema OneDrip.';
+    
+    openWhatsApp('556496028022', message);
   };
 
   const formatDate = (dateString: string) => {

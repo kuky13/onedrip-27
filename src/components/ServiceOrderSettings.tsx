@@ -3,9 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Settings, Building2, ArrowRight, Palette } from 'lucide-react';
+import { Settings, Building2, ArrowRight, Palette, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { openWhatsApp } from '@/utils/whatsapp';
 interface SettingsCardProps {
   title: string;
   description: string;
@@ -51,7 +53,11 @@ function SettingsCard({
     </Card>;
 }
 export function ServiceOrderSettings() {
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
+  
+  // Check if user has VIP access
+  const hasVipAccess = profile?.service_orders_vip_enabled || false;
   const settingsOptions = [{
     title: 'Marca da Empresa',
     description: 'Personalize a identidade visual da sua empresa nas ordens compartilhadas. Configure logo, nome e informações de contato.',
@@ -63,6 +69,39 @@ export function ServiceOrderSettings() {
   const handleNavigation = (path: string) => {
     navigate(path);
   };
+  // Check authentication
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
+          <p className="text-muted-foreground mb-6">Você precisa estar logado para acessar esta página.</p>
+          <Button onClick={() => navigate('/auth')}>Fazer Login</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Check VIP access
+  if (!hasVipAccess) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
+            <Wrench className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">Ordens de Serviço (VIP)</h1>
+          <p className="text-muted-foreground mb-6">
+            Esta funcionalidade é para usuarios VIP. Entre em contato com o suporte para solicitar acesso.
+          </p>
+          <Button onClick={() => navigate('/service-orders')} className="w-full">
+            Voltar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
