@@ -102,8 +102,11 @@ export const IOSContextualHeaderEnhanced = ({
     duration: 0.3
   }}>
       {/* Main header content */}
-      <div className="px-4 py-4">
-        <div className="flex items-center justify-between">
+      <div className="px-6 py-5 bg-gradient-to-r from-background/95 via-background/98 to-background/95">
+        <div className="flex items-center justify-between gap-4 relative">
+          {/* Subtle background glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 rounded-2xl blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl" />
           {/* Left Section */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <AnimatePresence mode="wait">
