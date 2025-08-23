@@ -465,7 +465,7 @@ export const ServiceOrderFormPage = () => {
           </div>
           <h1 className="text-2xl font-bold mb-4">Ordens de Serviço (VIP)</h1>
           <p className="text-muted-foreground mb-6">
-            Esta funcionalidade está em fase beta. Entre em contato com o suporte para solicitar acesso.
+            Esta funcionalidade é para usuarios VIP. Entre em contato com o suporte para solicitar acesso.
           </p>
           <Button onClick={() => navigate('/service-orders')} className="w-full">
             Voltar
