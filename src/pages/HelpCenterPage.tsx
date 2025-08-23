@@ -4,28 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  HelpCircle, 
-  Search, 
-  FileText, 
-  ClipboardList, 
-  Crown, 
-  Trash2, 
-  Settings, 
-  Play,
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  BookOpen,
-  Video,
-  Users,
-  Calculator,
-  Wrench,
-  Shield,
-  Building
-} from 'lucide-react';
+import { HelpCircle, Search, FileText, ClipboardList, Crown, Trash2, Settings, Play, ChevronDown, ChevronRight, ExternalLink, BookOpen, Video, Users, Calculator, Wrench, Shield, Building } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-
 interface HelpSection {
   id: string;
   title: string;
@@ -34,37 +14,26 @@ interface HelpSection {
   content: React.ReactNode;
   videoIncluded?: boolean;
 }
-
 interface FAQItem {
   question: string;
   answer: string;
   category: string;
 }
-
 const HelpCenterPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [openSections, setOpenSections] = useState<string[]>(['budgets']);
-
   const toggleSection = (sectionId: string) => {
-    setOpenSections(prev => 
-      prev.includes(sectionId) 
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
-    );
+    setOpenSections(prev => prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]);
   };
-
   const videoUrl = "https://www.youtube.com/embed/oMRTgDAeQwo?si=9FuByHjah0fcqqRu";
-
-  const helpSections: HelpSection[] = [
-    {
-      id: 'budgets',
-      title: 'Criação e Gestão de Orçamentos',
-      icon: <Calculator className="h-5 w-5" />,
-      description: 'Aprenda a criar, visualizar e gerenciar orçamentos de forma eficiente',
-      videoIncluded: true,
-      content: (
-        <div className="space-y-6">
+  const helpSections: HelpSection[] = [{
+    id: 'budgets',
+    title: 'Criação e Gestão de Orçamentos',
+    icon: <Calculator className="h-5 w-5" />,
+    description: 'Aprenda a criar, visualizar e gerenciar orçamentos de forma eficiente',
+    videoIncluded: true,
+    content: <div className="space-y-6">
           <div className="bg-card p-4 rounded-lg border border-border">
             <h4 className="font-semibold text-foreground mb-2">📋 Como Criar um Novo Orçamento</h4>
             <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
@@ -106,25 +75,17 @@ const HelpCenterPage = () => {
               Assista ao tutorial completo sobre como criar e gerenciar orçamentos no sistema:
             </p>
             <div className="aspect-video rounded-lg overflow-hidden">
-              <iframe
-                src={videoUrl}
-                title="Tutorial - Criação de Orçamentos"
-                className="w-full h-full"
-                allowFullScreen
-              />
+              <iframe src={videoUrl} title="Tutorial - Criação de Orçamentos" className="w-full h-full" allowFullScreen />
             </div>
           </div>
         </div>
-      )
-    },
-    {
-      id: 'service-orders',
-      title: 'Ordens de Serviço',
-      icon: <ClipboardList className="h-5 w-5" />,
-      description: 'Gerencie ordens de serviço, acompanhe status e organize o workflow',
-      videoIncluded: true,
-      content: (
-        <div className="space-y-6">
+  }, {
+    id: 'service-orders',
+    title: 'Ordens de Serviço',
+    icon: <ClipboardList className="h-5 w-5" />,
+    description: 'Gerencie ordens de serviço, acompanhe status e organize o workflow',
+    videoIncluded: true,
+    content: <div className="space-y-6">
           <div className="bg-card p-4 rounded-lg border border-border">
             <h4 className="font-semibold text-foreground mb-2">🔧 Criação de Ordens de Serviço</h4>
             <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
@@ -182,35 +143,23 @@ const HelpCenterPage = () => {
               Veja como gerenciar ordens de serviço de forma eficiente:
             </p>
             <div className="aspect-video rounded-lg overflow-hidden">
-              <iframe
-                src={videoUrl}
-                title="Tutorial - Ordens de Serviço"
-                className="w-full h-full"
-                allowFullScreen
-              />
+              <iframe src={videoUrl} title="Tutorial - Ordens de Serviço" className="w-full h-full" allowFullScreen />
             </div>
           </div>
         </div>
-      )
-    },
-    {
-      id: 'vip-clients',
-      title: 'Sistema de Clientes VIP',
-      icon: <Crown className="h-5 w-5" />,
-      description: 'Entenda como funciona o sistema de usuários VIP e seus benefícios',
-      content: (
-        <div className="space-y-6">
+  }, {
+    id: 'vip-clients',
+    title: 'Sistema de Clientes VIP',
+    icon: <Crown className="h-5 w-5" />,
+    description: 'Entenda como funciona o sistema de usuários VIP e seus benefícios',
+    content: <div className="space-y-6">
           <div className="bg-primary/10 p-4 rounded-lg border border-border">
             <h4 className="font-semibold text-foreground mb-2">👑 O que é o Sistema VIP?</h4>
             <p className="text-sm text-muted-foreground mb-3">
               O sistema VIP concede acesso especial às funcionalidades avançadas de ordens de serviço, 
               permitindo que usuários selecionados tenham recursos exclusivos e uma experiência aprimorada.
             </p>
-            <div className="bg-primary/20 p-3 rounded border border-border">
-              <p className="text-xs text-foreground font-medium">
-                💡 Apenas administradores podem gerenciar o status VIP dos usuários
-              </p>
-            </div>
+            
           </div>
 
           <div className="bg-card p-4 rounded-lg border border-border">
@@ -224,48 +173,16 @@ const HelpCenterPage = () => {
             </ul>
           </div>
 
-          <div className="bg-secondary/50 p-4 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">⚙️ Gerenciamento de Usuários VIP (Admin)</h4>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Acesse as configurações como administrador</li>
-              <li>Navegue até "Gerenciamento de Usuários VIP"</li>
-              <li>Use os filtros para encontrar usuários específicos</li>
-              <li>Ative/desative o status VIP com o switch individual</li>
-              <li>Use ações em massa para ativar/desativar VIP para todos</li>
-            </ol>
-          </div>
+          
 
-          <div className="bg-muted p-4 rounded-lg border border-border">
-            <h4 className="font-semibold text-foreground mb-2">🔍 Funcionalidades do Painel Admin</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="font-medium text-foreground mb-2">Filtros Disponíveis:</p>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>• Busca por nome ou username</li>
-                  <li>• Filtro por cargo (Admin, Manager, User)</li>
-                  <li>• Filtro por status VIP</li>
-                </ul>
-              </div>
-              <div>
-                <p className="font-medium text-foreground mb-2">Ações em Massa:</p>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>• Ativar VIP para todos os usuários</li>
-                  <li>• Desativar VIP para todos os usuários</li>
-                  <li>• Atualizar lista de usuários</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+          
         </div>
-      )
-    },
-    {
-      id: 'trash',
-      title: 'Sistema de Lixeira',
-      icon: <Trash2 className="h-5 w-5" />,
-      description: 'Recupere itens excluídos e gerencie a lixeira do sistema',
-      content: (
-        <div className="space-y-6">
+  }, {
+    id: 'trash',
+    title: 'Sistema de Lixeira',
+    icon: <Trash2 className="h-5 w-5" />,
+    description: 'Recupere itens excluídos e gerencie a lixeira do sistema',
+    content: <div className="space-y-6">
           <div className="bg-destructive/10 p-4 rounded-lg border border-border">
             <h4 className="font-semibold text-foreground mb-2">🗑️ Como Funciona a Lixeira</h4>
             <p className="text-sm text-muted-foreground mb-3">
@@ -323,16 +240,13 @@ const HelpCenterPage = () => {
             </ul>
           </div>
         </div>
-      )
-    },
-    {
-      id: 'settings',
-      title: 'Configurações do Sistema',
-      icon: <Settings className="h-5 w-5" />,
-      description: 'Personalize sua experiência e configure preferências da aplicação',
-      videoIncluded: true,
-      content: (
-        <div className="space-y-6">
+  }, {
+    id: 'settings',
+    title: 'Configurações do Sistema',
+    icon: <Settings className="h-5 w-5" />,
+    description: 'Personalize sua experiência e configure preferências da aplicação',
+    videoIncluded: true,
+    content: <div className="space-y-6">
           <div className="bg-card p-4 rounded-lg border border-border">
             <h4 className="font-semibold text-foreground mb-2">👤 Conta e Segurança</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -406,77 +320,72 @@ const HelpCenterPage = () => {
               Aprenda a personalizar e configurar o sistema conforme suas necessidades:
             </p>
             <div className="aspect-video rounded-lg overflow-hidden">
-              <iframe
-                src={videoUrl}
-                title="Tutorial - Configurações do Sistema"
-                className="w-full h-full"
-                allowFullScreen
-              />
+              <iframe src={videoUrl} title="Tutorial - Configurações do Sistema" className="w-full h-full" allowFullScreen />
             </div>
           </div>
         </div>
-      )
-    }
-  ];
-
-  const faqItems: FAQItem[] = [
-    {
-      question: "Como posso recuperar um orçamento excluído?",
-      answer: "Os orçamentos excluídos são movidos para a lixeira. Acesse a seção de lixeira, localize o item e clique em 'Restaurar'.",
-      category: "budgets"
-    },
-    {
-      question: "O que significa ter acesso VIP?",
-      answer: "O acesso VIP permite usar funcionalidades avançadas de ordens de serviço, incluindo página de detalhes completa, upload de anexos e histórico de eventos.",
-      category: "vip-clients"
-    },
-    {
-      question: "Como alterar o status de uma ordem de serviço?",
-      answer: "Na lista de ordens de serviço, clique no cartão da ordem desejada e use os botões de ação para alterar o status (Pendente, Em Andamento, Concluída, Cancelada).",
-      category: "service-orders"
-    },
-    {
-      question: "Posso personalizar as mensagens do WhatsApp?",
-      answer: "Sim! Nas configurações da empresa, você pode personalizar as mensagens de compartilhamento, incluindo texto personalizado e informações da empresa.",
-      category: "settings"
-    },
-    {
-      question: "Como limpar o cache do sistema?",
-      answer: "Acesse Configurações > Ações da Conta > Limpeza de Cache. Isso removerá dados temporários, mas manterá seus dados do backend seguros.",
-      category: "settings"
-    },
-    {
-      question: "É possível filtrar ordens de serviço por prioridade?",
-      answer: "Sim! Use os filtros na página de ordens de serviço para filtrar por status, prioridade, cliente ou período específico.",
-      category: "service-orders"
-    }
-  ];
-
-  const categories = [
-    { id: 'all', label: 'Todas as Categorias', icon: <BookOpen className="h-4 w-4" /> },
-    { id: 'budgets', label: 'Orçamentos', icon: <Calculator className="h-4 w-4" /> },
-    { id: 'service-orders', label: 'Ordens de Serviço', icon: <ClipboardList className="h-4 w-4" /> },
-    { id: 'vip-clients', label: 'Clientes VIP', icon: <Crown className="h-4 w-4" /> },
-    { id: 'trash', label: 'Lixeira', icon: <Trash2 className="h-4 w-4" /> },
-    { id: 'settings', label: 'Configurações', icon: <Settings className="h-4 w-4" /> }
-  ];
-
+  }];
+  const faqItems: FAQItem[] = [{
+    question: "Como posso recuperar um orçamento excluído?",
+    answer: "Os orçamentos excluídos são movidos para a lixeira. Acesse a seção de lixeira, localize o item e clique em 'Restaurar'.",
+    category: "budgets"
+  }, {
+    question: "O que significa ter acesso VIP?",
+    answer: "O acesso VIP permite usar funcionalidades avançadas de ordens de serviço, incluindo página de detalhes completa, upload de anexos e histórico de eventos.",
+    category: "vip-clients"
+  }, {
+    question: "Como alterar o status de uma ordem de serviço?",
+    answer: "Na lista de ordens de serviço, clique no cartão da ordem desejada e use os botões de ação para alterar o status (Pendente, Em Andamento, Concluída, Cancelada).",
+    category: "service-orders"
+  }, {
+    question: "Posso personalizar as mensagens do WhatsApp?",
+    answer: "Sim! Nas configurações da empresa, você pode personalizar as mensagens de compartilhamento, incluindo texto personalizado e informações da empresa.",
+    category: "settings"
+  }, {
+    question: "Como limpar o cache do sistema?",
+    answer: "Acesse Configurações > Ações da Conta > Limpeza de Cache. Isso removerá dados temporários, mas manterá seus dados do backend seguros.",
+    category: "settings"
+  }, {
+    question: "É possível filtrar ordens de serviço por prioridade?",
+    answer: "Sim! Use os filtros na página de ordens de serviço para filtrar por status, prioridade, cliente ou período específico.",
+    category: "service-orders"
+  }];
+  const categories = [{
+    id: 'all',
+    label: 'Todas as Categorias',
+    icon: <BookOpen className="h-4 w-4" />
+  }, {
+    id: 'budgets',
+    label: 'Orçamentos',
+    icon: <Calculator className="h-4 w-4" />
+  }, {
+    id: 'service-orders',
+    label: 'Ordens de Serviço',
+    icon: <ClipboardList className="h-4 w-4" />
+  }, {
+    id: 'vip-clients',
+    label: 'Clientes VIP',
+    icon: <Crown className="h-4 w-4" />
+  }, {
+    id: 'trash',
+    label: 'Lixeira',
+    icon: <Trash2 className="h-4 w-4" />
+  }, {
+    id: 'settings',
+    label: 'Configurações',
+    icon: <Settings className="h-4 w-4" />
+  }];
   const filteredSections = helpSections.filter(section => {
-    const matchesSearch = section.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         section.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = section.title.toLowerCase().includes(searchTerm.toLowerCase()) || section.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || section.id === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
   const filteredFAQ = faqItems.filter(item => {
-    const matchesSearch = item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.answer.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = item.question.toLowerCase().includes(searchTerm.toLowerCase()) || item.answer.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -496,27 +405,14 @@ const HelpCenterPage = () => {
         <div className="mb-8 space-y-4">
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              placeholder="Buscar por tópicos, funcionalidades ou dúvidas..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 text-lg"
-            />
+            <Input placeholder="Buscar por tópicos, funcionalidades ou dúvidas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 h-12 text-lg" />
           </div>
           
           <div className="flex flex-wrap justify-center gap-2">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(category.id)}
-                className="flex items-center gap-2"
-              >
+            {categories.map(category => <Button key={category.id} variant={selectedCategory === category.id ? "default" : "outline"} size="sm" onClick={() => setSelectedCategory(category.id)} className="flex items-center gap-2">
                 {category.icon}
                 {category.label}
-              </Button>
-            ))}
+              </Button>)}
           </div>
         </div>
 
@@ -533,20 +429,10 @@ const HelpCenterPage = () => {
           </CardHeader>
           <CardContent>
             <div className="aspect-video rounded-lg overflow-hidden bg-black/20">
-              <iframe
-                src={videoUrl}
-                title="Tutorial Completo - Sistema OneDrip"
-                className="w-full h-full"
-                allowFullScreen
-              />
+              <iframe src={videoUrl} title="Tutorial Completo - Sistema OneDrip" className="w-full h-full" allowFullScreen />
             </div>
             <div className="mt-4 text-center">
-              <Button 
-                variant="secondary" 
-                size="lg"
-                onClick={() => window.open('https://youtu.be/oMRTgDAeQwo?si=9FuByHjah0fcqqRu', '_blank')}
-                className="gap-2"
-              >
+              <Button variant="secondary" size="lg" onClick={() => window.open('https://youtu.be/oMRTgDAeQwo?si=9FuByHjah0fcqqRu', '_blank')} className="gap-2">
                 <ExternalLink className="h-4 w-4" />
                 Assistir no YouTube
               </Button>
@@ -560,12 +446,8 @@ const HelpCenterPage = () => {
             Guias Detalhados por Módulo
           </h2>
           
-          {filteredSections.map((section) => (
-            <Card key={section.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <Collapsible 
-                open={openSections.includes(section.id)}
-                onOpenChange={() => toggleSection(section.id)}
-              >
+          {filteredSections.map(section => <Card key={section.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Collapsible open={openSections.includes(section.id)} onOpenChange={() => toggleSection(section.id)}>
                 <CollapsibleTrigger asChild>
                   <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
                     <div className="flex items-center justify-between">
@@ -576,21 +458,15 @@ const HelpCenterPage = () => {
                         <div className="text-left">
                           <CardTitle className="text-xl flex items-center gap-2">
                             {section.title}
-                            {section.videoIncluded && (
-                              <Badge variant="secondary" className="gap-1">
+                            {section.videoIncluded && <Badge variant="secondary" className="gap-1">
                                 <Video className="h-3 w-3" />
                                 Vídeo
-                              </Badge>
-                            )}
+                              </Badge>}
                           </CardTitle>
                           <p className="text-muted-foreground mt-1">{section.description}</p>
                         </div>
                       </div>
-                      {openSections.includes(section.id) ? (
-                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                      )}
+                      {openSections.includes(section.id) ? <ChevronDown className="h-5 w-5 text-muted-foreground" /> : <ChevronRight className="h-5 w-5 text-muted-foreground" />}
                     </div>
                   </CardHeader>
                 </CollapsibleTrigger>
@@ -601,8 +477,7 @@ const HelpCenterPage = () => {
                   </CardContent>
                 </CollapsibleContent>
               </Collapsible>
-            </Card>
-          ))}
+            </Card>)}
         </div>
 
         {/* FAQ Section */}
@@ -618,12 +493,10 @@ const HelpCenterPage = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {filteredFAQ.map((item, index) => (
-                <div key={index} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+              {filteredFAQ.map((item, index) => <div key={index} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                   <h4 className="font-semibold text-foreground mb-2">{item.question}</h4>
                   <p className="text-muted-foreground text-sm">{item.answer}</p>
-                </div>
-              ))}
+                </div>)}
             </div>
           </CardContent>
         </Card>
@@ -638,19 +511,11 @@ const HelpCenterPage = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button 
-                variant="outline" 
-                className="h-auto p-4 flex flex-col items-center gap-2"
-                onClick={() => window.open('/terms', '_blank')}
-              >
+              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2" onClick={() => window.open('/terms', '_blank')}>
                 <FileText className="h-6 w-6" />
                 <span>Termos de Uso</span>
               </Button>
-              <Button 
-                variant="outline" 
-                className="h-auto p-4 flex flex-col items-center gap-2"
-                onClick={() => window.open('/privacy', '_blank')}
-              >
+              <Button variant="outline" className="h-auto p-4 flex flex-col items-center gap-2" onClick={() => window.open('/privacy', '_blank')}>
                 <Shield className="h-6 w-6" />
                 <span>Política de Privacidade</span>
               </Button>
@@ -659,8 +524,6 @@ const HelpCenterPage = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default HelpCenterPage;
