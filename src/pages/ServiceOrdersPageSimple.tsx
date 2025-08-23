@@ -452,7 +452,18 @@ const ServiceOrdersPageSimple: React.FC = () => {
                   {/* Client and Device Info */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     {/* Client Info */}
-                    
+                    <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                        <p className="text-sm font-medium text-muted-foreground">Cliente</p>
+                      </div>
+                      <p className="font-semibold text-foreground">
+                        {order.client_name || 'Cliente não informado'}
+                      </p>
+                      {order.client_phone && <p className="text-sm text-muted-foreground mt-1">
+                          {order.client_phone}
+                        </p>}
+                    </div>
 
                     {/* Device Info */}
                     <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
