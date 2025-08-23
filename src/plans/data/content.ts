@@ -71,10 +71,6 @@ export const PLANS_CONTENT = {
     
     beneficios: [
       "Sistema de ordem de serviço",
-      "Gestão avançada de técnicos",
-      "Relatórios detalhados de produtividade",
-      "Controle de estoque avançado",
-      "Integração com fornecedores",
       "Suporte prioritário"
     ]
   },
