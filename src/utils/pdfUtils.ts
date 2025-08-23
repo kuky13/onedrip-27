@@ -307,7 +307,7 @@ export const generateBudgetPDF = async (budget: BudgetData, companyData?: Compan
   
   // Lista de serviços inclusos com bordas
   const includedServices = [
-    'Busca e entrega do aparelho',
+    '● Busca e entrega do aparelho',
     'Película de proteção de brinde'
   ];
   
