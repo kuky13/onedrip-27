@@ -126,7 +126,7 @@ export const LicensePage = () => {
   const handleEmailContact = () => {
     const subject = encodeURIComponent('Suporte - Licença OneDrip');
     const body = encodeURIComponent(`Olá,\n\nPreciso de ajuda com minha licença do OneDrip.\n\nMeu email: ${user?.email || 'Não informado'}\nData: ${new Date().toLocaleDateString('pt-BR')}`);
-    window.open(`mailto:suporte@onedrip.com?subject=${subject}&body=${body}`, '_blank');
+    window.open(`mailto:suporte@onedrip.email?subject=${subject}&body=${body}`, '_blank');
   };
   return <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -247,7 +247,7 @@ export const LicensePage = () => {
               
               <Button onClick={handleEmailContact} variant="outline" className="w-full justify-start">
                 <Mail className="mr-2 h-4 w-4" />
-                suporte@onedrip.com
+                suporte@onedrip.email
               </Button>
 
               <div className="flex items-center gap-2 text-sm text-muted-foreground">

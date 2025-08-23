@@ -23,8 +23,8 @@ export const APP_CONFIG = {
   // Informações de contato
   contact: {
     email: 'contato@onedrip.com.br',
-    support: 'suporte@onedrip.com.br',
-    security: 'suporte@onedrip.com.br',
+    support: 'suporte@onedrip.email',
+    security: 'suporte@onedrip.email',
     whatsapp: '(64) 9602-8022',
     whatsappUrl: 'https://wa.me/556496028022'
   },

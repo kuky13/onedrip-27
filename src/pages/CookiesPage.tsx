@@ -346,7 +346,7 @@ export const CookiesPage = () => {
               </p>
               <div className="space-y-2">
                 <p className="text-muted-foreground">
-                  <strong>E-mail:</strong> suporte@onedrip.com.br
+                  <strong>E-mail:</strong> suporte@onedrip.email
                 </p>
                 <p className="text-muted-foreground">
                   <strong>WhatsApp:</strong> +55 (64) 9602-8022

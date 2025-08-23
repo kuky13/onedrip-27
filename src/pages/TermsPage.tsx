@@ -300,7 +300,7 @@ export const TermsPage = () => {
                 </p>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="h-4 w-4" />
-                  <span>suporte@onedrip.com.br</span>
+                  <span>suporte@onedrip.email</span>
 
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">

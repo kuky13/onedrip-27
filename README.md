@@ -273,7 +273,7 @@ Valorizamos sua participação no desenvolvimento do OneDrip! Existem várias fo
 
 [![WhatsApp Community](https://img.shields.io/badge/WhatsApp_Community-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://chat.whatsapp.com/GPwLAJHurVnA0fJa9aWlEL)
 [![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](#)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:suporte@onedrip.com)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:suporte@onedrip.email)
 [![GitHub Issues](https://img.shields.io/badge/GitHub_Issues-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/kukysolutions/onedrip-system/issues)
 
 </div>
@@ -287,7 +287,7 @@ Valorizamos sua participação no desenvolvimento do OneDrip! Existem várias fo
 
 ### **Suporte Técnico**
 - 📞 **WhatsApp**: (64) 9602-8022
-- 📧 **E-mail**: suporte@onedrip.com.br
+- 📧 **E-mail**: suporte@onedrip.email
 - 🕐 **Horário**: Segunda à Sexta, 8h às 18h
 
 ---

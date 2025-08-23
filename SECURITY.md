@@ -164,7 +164,7 @@ Levamos a segurança muito a sério. Se você descobrir uma vulnerabilidade, ped
 ### **📋 Processo de Reporte**
 
 1. **🚫 NÃO** abra um issue público no GitHub
-2. **📧 ENVIE** um e-mail detalhado para suporte@onedrip.com.br
+2. **📧 ENVIE** um e-mail detalhado para suporte@onedrip.email
 3. **📋 INCLUA** as seguintes informações:
    - Descrição detalhada da vulnerabilidade
    - Passos para reprodução

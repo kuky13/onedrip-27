@@ -356,7 +356,7 @@ export type MarketingConfig = typeof APP_CONFIG.marketing;`;
                     type="email"
                     value={config.support}
                     onChange={(e) => setConfig({...config, support: e.target.value})}
-                    placeholder="suporte@onedrip.com"
+                    placeholder="suporte@onedrip.email"
                   />
                 </div>
               </div>
@@ -369,7 +369,7 @@ export type MarketingConfig = typeof APP_CONFIG.marketing;`;
                     type="email"
                     value={config.security}
                     onChange={(e) => setConfig({...config, security: e.target.value})}
-                    placeholder="suporte@onedrip.com.br"
+                    placeholder="suporte@onedrip.email"
                   />
                 </div>
                 <div>
