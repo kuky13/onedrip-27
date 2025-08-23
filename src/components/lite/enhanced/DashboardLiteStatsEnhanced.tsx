@@ -27,8 +27,13 @@ export const DashboardLiteStatsEnhanced = ({
   profile,
   userId
 }: DashboardLiteStatsEnhancedProps) => {
-  const { isDesktop } = useResponsive();
-  const { licenseDetails, loading: licenseLoading } = useUserLicenseDetails();
+  const {
+    isDesktop
+  } = useResponsive();
+  const {
+    licenseDetails,
+    loading: licenseLoading
+  } = useUserLicenseDetails();
   const [stats, setStats] = useState<StatsData>({
     totalBudgets: 0,
     weeklyGrowth: 0,
@@ -64,17 +69,13 @@ export const DashboardLiteStatsEnhanced = ({
         const averageValue = budgets?.length ? totalRevenue / budgets.length : 0;
 
         // Fetch service orders stats
-        const { data: serviceOrders } = await supabase
-          .from('service_orders')
-          .select('*')
-          .eq('owner_id', userId)
-          .is('deleted_at', null);
-
+        const {
+          data: serviceOrders
+        } = await supabase.from('service_orders').select('*').eq('owner_id', userId).is('deleted_at', null);
         const totalServiceOrders = serviceOrders?.length || 0;
         const pendingServiceOrders = serviceOrders?.filter(so => so.status === 'opened').length || 0;
         const completedServiceOrders = serviceOrders?.filter(so => so.status === 'completed').length || 0;
         const serviceOrdersRevenue = serviceOrders?.reduce((sum, so) => sum + (so.total_price || 0), 0) || 0;
-
         setStats({
           totalBudgets: budgets?.length || 0,
           weeklyGrowth: weeklyBudgets.length,
@@ -106,15 +107,18 @@ export const DashboardLiteStatsEnhanced = ({
         <AdvancedSkeleton lines={3} avatar />
       </GlassCard>;
   }
-  return (
-    <div className={`mb-6 ${isDesktop ? 'desktop-page-content' : 'space-y-6'}`}>
+  return <div className={`mb-6 ${isDesktop ? 'desktop-page-content' : 'space-y-6'}`}>
       {/* Header com saudação */}
       <GlassCard className={`${isDesktop ? 'desktop-card' : 'p-6'}`}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        duration: 0.5
+      }}>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-2xl font-bold text-foreground">
@@ -122,51 +126,16 @@ export const DashboardLiteStatsEnhanced = ({
               </h2>
               <p className="text-muted-foreground">Seja bem-vindo(a) de volta</p>
             </div>
-            {profile && (
-              <BounceBadge variant="default" className="bg-primary/20 text-primary font-semibold">
+            {profile && <BounceBadge variant="default" className="bg-primary/20 text-primary font-semibold">
                 {profile.role.toUpperCase()}
-              </BounceBadge>
-            )}
+              </BounceBadge>}
           </div>
           
-          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-              {licenseLoading ? (
-                <RefreshCw className="h-5 w-5 text-primary animate-spin" />
-              ) : licenseDetails?.is_valid ? (
-                licenseDetails.days_remaining && licenseDetails.days_remaining <= 7 ? (
-                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                ) : (
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                )
-              ) : (
-                <AlertTriangle className="h-5 w-5 text-red-500" />
-              )}
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Status da Licença
-              </p>
-              <p className="text-lg font-bold text-primary">
-                {licenseLoading ? (
-                  'Carregando...'
-                ) : licenseDetails?.is_valid ? (
-                  licenseDetails.days_remaining !== undefined ? (
-                    `${licenseDetails.days_remaining} dias restantes`
-                  ) : (
-                    'Licença Ativa'
-                  )
-                ) : (
-                  'Licença Inválida'
-                )}
-              </p>
-            </div>
-          </div>
+          
         </motion.div>
       </GlassCard>
 
 
 
-    </div>
-  );
+    </div>;
 };
