@@ -283,7 +283,7 @@ export const LicensePage = () => {
                     ? `Sua licença expirou há ${calculateExpiredDays()} dias!` 
                     : 'Precisa de uma licença?'
                   }
-                </strong> Entre em contato via WhatsApp no número (64) 9602-8022 para {licenseData?.has_license && !licenseData?.is_valid ? 'renovar' : 'adquirir'} sua licença.
+                </strong> Entre em contato via WhatsApp para {licenseData?.has_license && !licenseData?.is_valid ? 'renovar' : 'adquirir'} sua licença.
               </AlertDescription>
             </Alert>
           </CardContent>
