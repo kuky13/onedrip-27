@@ -402,19 +402,7 @@ const HelpCenterPage = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input placeholder="Buscar por tópicos, funcionalidades ou dúvidas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 h-12 text-lg" />
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-2">
-            {categories.map(category => <Button key={category.id} variant={selectedCategory === category.id ? "default" : "outline"} size="sm" onClick={() => setSelectedCategory(category.id)} className="flex items-center gap-2">
-                {category.icon}
-                {category.label}
-              </Button>)}
-          </div>
-        </div>
+        
 
         {/* Main Video Section */}
         <Card className="mb-12 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
