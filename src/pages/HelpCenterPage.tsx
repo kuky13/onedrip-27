@@ -49,6 +49,16 @@ const HelpCenterPage = () => {
     "orçamento", "vip", "lixeira", "configuração", "anexos", "whatsapp"
   ];
 
+  // Categorias primeiro
+  const categories = [
+    { id: 'all', label: 'Todas as Categorias', icon: <BookOpen className="h-4 w-4" /> },
+    { id: 'budgets', label: 'Orçamentos', icon: <Calculator className="h-4 w-4" /> },
+    { id: 'service-orders', label: 'Ordens de Serviço', icon: <ClipboardList className="h-4 w-4" /> },
+    { id: 'vip-clients', label: 'Clientes VIP', icon: <Crown className="h-4 w-4" /> },
+    { id: 'trash', label: 'Lixeira', icon: <Trash2 className="h-4 w-4" /> },
+    { id: 'settings', label: 'Configurações', icon: <Settings className="h-4 w-4" /> }
+  ];
+
   // Configuração de atalhos de teclado
   const { getDefaultShortcuts } = useKeyboardShortcuts({
     shortcuts: [
@@ -406,31 +416,6 @@ const HelpCenterPage = () => {
     question: "É possível filtrar ordens de serviço por prioridade?",
     answer: "Sim! Use os filtros na página de ordens de serviço para filtrar por status, prioridade, cliente ou período específico.",
     category: "service-orders"
-  }];
-  const categories = [{
-    id: 'all',
-    label: 'Todas as Categorias',
-    icon: <BookOpen className="h-4 w-4" />
-  }, {
-    id: 'budgets',
-    label: 'Orçamentos',
-    icon: <Calculator className="h-4 w-4" />
-  }, {
-    id: 'service-orders',
-    label: 'Ordens de Serviço',
-    icon: <ClipboardList className="h-4 w-4" />
-  }, {
-    id: 'vip-clients',
-    label: 'Clientes VIP',
-    icon: <Crown className="h-4 w-4" />
-  }, {
-    id: 'trash',
-    label: 'Lixeira',
-    icon: <Trash2 className="h-4 w-4" />
-  }, {
-    id: 'settings',
-    label: 'Configurações',
-    icon: <Settings className="h-4 w-4" />
   }];
   const filteredSections = helpSections.filter(section => {
     const matchesSearch = section.title.toLowerCase().includes(searchTerm.toLowerCase()) || section.description.toLowerCase().includes(searchTerm.toLowerCase());
