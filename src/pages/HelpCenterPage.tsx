@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { HelpCircle, Search, FileText, ClipboardList, Crown, Trash2, Settings, Play, ChevronDown, ChevronRight, ExternalLink, BookOpen, Video, Users, Calculator, Wrench, Shield, Building, X } from 'lucide-react';
+import { HelpCircle, Search, FileText, ClipboardList, Crown, Trash2, Settings, Play, ChevronDown, ChevronRight, ExternalLink, BookOpen, Video, Users, Calculator, Wrench, Shield, Building } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { HelpSearchBar } from '@/components/help/HelpSearchBar';
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 interface HelpSection {
   id: string;
   title: string;
@@ -25,74 +23,9 @@ const HelpCenterPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [openSections, setOpenSections] = useState<string[]>(['budgets']);
-  
   const toggleSection = (sectionId: string) => {
     setOpenSections(prev => prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]);
   };
-
-  // Sugestões de pesquisa inteligentes
-  const searchSuggestions = [
-    "Como criar orçamento",
-    "Ordens de serviço",
-    "Status VIP",
-    "Recuperar lixeira",
-    "Configurar empresa",
-    "Alterar senha",
-    "Upload de anexos",
-    "Compartilhar WhatsApp",
-    "Filtros avançados",
-    "Backup de dados"
-  ];
-
-  // Termos de busca rápida
-  const quickSearchTerms = [
-    "orçamento", "vip", "lixeira", "configuração", "anexos", "whatsapp"
-  ];
-
-  // Categorias primeiro
-  const categories = [
-    { id: 'all', label: 'Todas as Categorias', icon: <BookOpen className="h-4 w-4" /> },
-    { id: 'budgets', label: 'Orçamentos', icon: <Calculator className="h-4 w-4" /> },
-    { id: 'service-orders', label: 'Ordens de Serviço', icon: <ClipboardList className="h-4 w-4" /> },
-    { id: 'vip-clients', label: 'Clientes VIP', icon: <Crown className="h-4 w-4" /> },
-    { id: 'trash', label: 'Lixeira', icon: <Trash2 className="h-4 w-4" /> },
-    { id: 'settings', label: 'Configurações', icon: <Settings className="h-4 w-4" /> }
-  ];
-
-  // Configuração de atalhos de teclado
-  const { getDefaultShortcuts } = useKeyboardShortcuts({
-    shortcuts: [
-      {
-        key: 'k',
-        ctrlKey: true,
-        action: () => {
-          const searchInput = document.querySelector('input[placeholder*="Buscar"]') as HTMLInputElement;
-          searchInput?.focus();
-        },
-        description: 'Focar na busca'
-      },
-      {
-        key: 'Escape',
-        action: () => {
-          if (searchTerm) {
-            setSearchTerm('');
-          }
-        },
-        description: 'Limpar busca'
-      },
-      // Atalhos numéricos para categorias
-      ...categories.map((category, index) => ({
-        key: index.toString(),
-        action: () => setSelectedCategory(category.id),
-        description: `Selecionar categoria: ${category.label}`
-      })),
-      {
-        key: 'a',
-        action: () => setSelectedCategory('all'),
-        description: 'Mostrar todas as categorias'
-      }
-    ]
-  });
   const videoUrl = "https://www.youtube.com/embed/oMRTgDAeQwo?si=9FuByHjah0fcqqRu";
   const helpSections: HelpSection[] = [{
     id: 'budgets',
@@ -417,6 +350,31 @@ const HelpCenterPage = () => {
     answer: "Sim! Use os filtros na página de ordens de serviço para filtrar por status, prioridade, cliente ou período específico.",
     category: "service-orders"
   }];
+  const categories = [{
+    id: 'all',
+    label: 'Todas as Categorias',
+    icon: <BookOpen className="h-4 w-4" />
+  }, {
+    id: 'budgets',
+    label: 'Orçamentos',
+    icon: <Calculator className="h-4 w-4" />
+  }, {
+    id: 'service-orders',
+    label: 'Ordens de Serviço',
+    icon: <ClipboardList className="h-4 w-4" />
+  }, {
+    id: 'vip-clients',
+    label: 'Clientes VIP',
+    icon: <Crown className="h-4 w-4" />
+  }, {
+    id: 'trash',
+    label: 'Lixeira',
+    icon: <Trash2 className="h-4 w-4" />
+  }, {
+    id: 'settings',
+    label: 'Configurações',
+    icon: <Settings className="h-4 w-4" />
+  }];
   const filteredSections = helpSections.filter(section => {
     const matchesSearch = section.title.toLowerCase().includes(searchTerm.toLowerCase()) || section.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || section.id === selectedCategory;
@@ -443,83 +401,19 @@ const HelpCenterPage = () => {
           </p>
         </div>
 
-        {/* Enhanced Search and Filters */}
-        <div className="mb-8 space-y-6">
-          <div className="relative max-w-3xl mx-auto">
-            <HelpSearchBar
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder="Buscar por tópicos, funcionalidades ou dúvidas... (Ctrl+K)"
-              suggestions={searchSuggestions}
-              onSuggestionClick={(suggestion) => setSearchTerm(suggestion)}
-              className="h-14 text-lg shadow-lg border-2 hover:border-primary/30 focus-within:border-primary/50 transition-colors"
-              autoFocus={false}
-            />
-            
-            {/* Quick Search Shortcuts */}
-            <div className="flex flex-wrap justify-center gap-2 mt-4">
-              {quickSearchTerms.map((term, index) => (
-                <Button
-                  key={index}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSearchTerm(term)}
-                  className="text-xs bg-muted/50 hover:bg-primary/10 hover:text-primary transition-colors animate-fade-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {term}
-                </Button>
-              ))}
-            </div>
+        {/* Search and Filters */}
+        <div className="mb-8 space-y-4">
+          <div className="relative max-w-2xl mx-auto">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input placeholder="Buscar por tópicos, funcionalidades ou dúvidas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 h-12 text-lg" />
           </div>
           
-          {/* Category Filters with Keyboard Navigation */}
-          <div className="space-y-3">
-            <p className="text-center text-sm text-muted-foreground">
-              Filtrar por categoria ou use as teclas <kbd className="kbd">1-6</kbd> para navegação rápida
-            </p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories.map((category, index) => (
-                <Button 
-                  key={category.id} 
-                  variant={selectedCategory === category.id ? "default" : "outline"} 
-                  size="sm" 
-                  onClick={() => setSelectedCategory(category.id)} 
-                  className="flex items-center gap-2 transition-all hover:scale-105"
-                  data-category-index={index}
-                >
-                  {category.icon}
-                  {category.label}
-                  <kbd className="kbd ml-2 text-xs opacity-60">{index}</kbd>
-                </Button>
-              ))}
-            </div>
+          <div className="flex flex-wrap justify-center gap-2">
+            {categories.map(category => <Button key={category.id} variant={selectedCategory === category.id ? "default" : "outline"} size="sm" onClick={() => setSelectedCategory(category.id)} className="flex items-center gap-2">
+                {category.icon}
+                {category.label}
+              </Button>)}
           </div>
-
-          {/* Search Results Info */}
-          {searchTerm && (
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                {filteredSections.length + filteredFAQ.length} resultado(s) encontrado(s) para "{searchTerm}"
-                {filteredSections.length + filteredFAQ.length === 0 && (
-                  <span className="block mt-1 text-destructive">
-                    Tente termos mais gerais ou verifique a ortografia
-                  </span>
-                )}
-              </p>
-              {searchTerm && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSearchTerm('')}
-                  className="mt-2 text-xs"
-                >
-                  <X className="h-3 w-3 mr-1" />
-                  Limpar busca
-                </Button>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Main Video Section */}
