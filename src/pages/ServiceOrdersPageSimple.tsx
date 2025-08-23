@@ -472,7 +472,7 @@ const ServiceOrdersPageSimple: React.FC = () => {
                         <p className="text-sm font-medium text-muted-foreground">Dispositivo</p>
                       </div>
                       <p className="font-semibold text-foreground">
-                        {order.device_type && order.device_model ? `${order.device_type} ${order.device_model}` : 'Dispositivo não especificado'}
+                        {order.device_model || 'Dispositivo não especificado'}
                       </p>
                       {order.device_serial && <p className="text-sm text-muted-foreground mt-1">
                           S/N: {order.device_serial}
