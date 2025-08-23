@@ -86,7 +86,7 @@ O **OneDrip** é uma plataforma SaaS desenvolvida especificamente para assistên
 ### **Página de Planos**
 ```bash
 💰 Planos: https://kuky.pro/plans
-📱 Suporte: WhatsApp (64) 9602-8022
+📱 Suporte: WhatsApp (64) 99602-8022
 ```
 
 ---
@@ -286,7 +286,7 @@ Valorizamos sua participação no desenvolvimento do OneDrip! Existem várias fo
 📋 Este projeto é licenciado sob a **Licença de Uso Restrito Oliver System** - veja [LICENSE](LICENSE) para detalhes.
 
 ### **Suporte Técnico**
-- 📞 **WhatsApp**: (64) 9602-8022
+- 📞 **WhatsApp**: (64) 99602-8022
 - 📧 **E-mail**: suporte@onedrip.email
 - 🕐 **Horário**: Segunda à Sexta, 8h às 18h
 

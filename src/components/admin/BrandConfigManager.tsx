@@ -378,7 +378,7 @@ export type MarketingConfig = typeof APP_CONFIG.marketing;`;
                     id="whatsapp"
                     value={config.whatsapp}
                     onChange={(e) => setConfig({...config, whatsapp: e.target.value})}
-                    placeholder="(64) 9602-8022"
+                    placeholder="(64) 99602-8022"
                   />
                 </div>
               </div>

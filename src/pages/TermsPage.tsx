@@ -305,7 +305,7 @@ export const TermsPage = () => {
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Phone className="h-4 w-4" />
-                  <span>+55 (64) 9602-8022</span>
+                  <span>+55 (64) 99602-8022</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-4">
                   Para dúvidas sobre estes termos ou questões legais, entre em contato conosco através 

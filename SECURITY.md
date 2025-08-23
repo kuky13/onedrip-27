@@ -184,7 +184,7 @@ Levamos a segurança muito a sério. Se você descobrir uma vulnerabilidade, ped
 
 Para **vulnerabilidades críticas** que representem risco imediato:
 
-- **📱 WhatsApp**: +55 (64) 9602-8022 (apenas emergências)
+- **📱 WhatsApp**: +55 (64) 99602-8022 (apenas emergências)
 - **⏰ Disponibilidade**: 24/7 para vulnerabilidades críticas
 
 ---
