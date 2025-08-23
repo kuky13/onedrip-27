@@ -320,7 +320,7 @@ const ServiceOrdersPageSimple: React.FC = () => {
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate('/service-orders/settings')} className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
-            Configurações
+            Config
           </Button>
           <Button onClick={() => navigate('/service-orders/new')} className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2">
             <Plus className="h-4 w-4" />
