@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useResponsive } from '@/hooks/useResponsive';
 import { cn } from '@/lib/utils';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator, SidebarRail, useSidebar } from '@/components/ui/sidebar';
-import { Home, FileText, Settings, Plus, LogOut, User, Star, Users, Database, UserCheck } from 'lucide-react';
+import { Home, FileText, Plus, LogOut, User, Star, Users, Database, UserCheck, HelpCircle } from 'lucide-react';
 interface AppSidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -25,32 +25,7 @@ export const AppSidebar = ({
   const {
     isDesktop
   } = useResponsive();
-  const navigationItems = [{
-    id: 'dashboard',
-    label: 'Menu',
-    icon: Home,
-    permission: true
-  }, {
-    id: 'new-budget',
-    label: 'Novo Orçamento',
-    icon: Plus,
-    permission: true
-  }, {
-    id: 'clients',
-    label: 'Clientes',
-    icon: UserCheck,
-    permission: true
-  }, {
-    id: 'data-management',
-    label: 'Gestão de Dados',
-    icon: Database,
-    permission: true
-  }, {
-    id: 'admin',
-    label: 'Administração',
-    icon: Users,
-    permission: hasRole('admin')
-  }];
+  const navigationItems = [{    id: 'dashboard',    label: 'Menu',    icon: Home,    permission: true  }, {    id: 'new-budget',    label: 'Novo Orçamento',    icon: Plus,    permission: true  }, {    id: 'clients',    label: 'Clientes',    icon: UserCheck,    permission: true  }, {    id: 'data-management',    label: 'Gestão de Dados',    icon: Database,    permission: true  }, {    id: 'help-center',    label: 'Central de Ajuda',    icon: HelpCircle,    permission: true,    route: '/central-de-ajuda'  }, {    id: 'admin',    label: 'Administração',    icon: Users,    permission: hasRole('admin')  }];
   return <Sidebar className={cn(
     "border-r border-border dark:border-white/5",
     "transition-all duration-200 ease-in-out",
@@ -162,7 +137,13 @@ export const AppSidebar = ({
             isDesktop && "desktop-sidebar-item p-0 mb-1"
           )}>
                 <SidebarMenuButton 
-                  onClick={() => onTabChange(item.id)} 
+                  onClick={() => {
+                    if (item.route) {
+                      window.location.href = item.route;
+                    } else {
+                      onTabChange(item.id);
+                    }
+                  }} 
                   isActive={activeTab === item.id} 
                   className={cn(
                     "h-12 text-base font-medium rounded-lg transition-all duration-200 ease-in-out",
