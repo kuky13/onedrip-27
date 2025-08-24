@@ -1,67 +1,155 @@
 import axios from 'axios';
 import { toast } from 'sonner';
-import { safeRedirect, isUrlSafe } from '@/utils/secureNavigation';
 
 const API_URL = 'http://localhost:3001';
 
-// Links específicos do Mercado Pago para cada tipo de plano
-const PAYMENT_LINKS = {
-  monthly: {
-    normal: 'mpago.li/2ZqAPDs',
-    vip: 'mpago.li/2A351iP'
-  },
-  yearly: {
-    normal: 'mpago.li/1c4LGhc',
-    vip: 'mpago.li/1x254ne'
-  }
-};
-
-// Nova função para redirecionamento direto baseado no plano e VIP
-export const redirectToPayment = (planType: 'monthly' | 'yearly', isVip: boolean) => {
-  try {
-    console.log('redirectToPayment called with:', { planType, isVip });
-    
-    // Validação dos parâmetros
-    if (!planType || !PAYMENT_LINKS[planType]) {
-      throw new Error(`Tipo de plano inválido: ${planType}`);
-    }
-    
-    const link = isVip ? PAYMENT_LINKS[planType].vip : PAYMENT_LINKS[planType].normal;
-    
-    if (!link) {
-      throw new Error(`Link não encontrado para plano: ${planType}, VIP: ${isVip}`);
-    }
-    
-    // Adiciona https:// se não estiver presente
-    const fullLink = link.startsWith('http') ? link : `https://${link}`;
-    
-    console.log(`Redirecionando para: ${fullLink} (Plano: ${planType}, VIP: ${isVip})`);
-    if (isUrlSafe(fullLink)) {
-      safeRedirect(fullLink, '/dashboard');
-    } else {
-      toast.error('Link de pagamento inválido');
-    }
-  } catch (error) {
-    console.error('Erro ao redirecionar para pagamento:', error);
-    alert('Erro ao processar pagamento. Tente novamente.');
-  }
-};
-
-// Função mantida para compatibilidade (caso ainda seja usada em outros lugares)
-export const createPayment = async (data: {
+// Interface para dados de pagamento PIX
+export interface PixPaymentData {
   planType: 'monthly' | 'yearly';
   isVip: boolean;
   userEmail: string;
-}) => {
-  const response = await axios.post(`${API_URL}/api/payment/create-preference`, data);
-  return response.data;
+}
+
+// Interface para resposta da API de criação de preferência
+export interface PixPreferenceResponse {
+  success: boolean;
+  preference_id: string;
+  init_point: string;
+  sandbox_init_point: string;
+  qr_code?: string;
+  qr_code_base64?: string;
+  transaction_id: string;
+  amount: number;
+  expires_at: string;
+}
+
+// Interface para status de pagamento
+export interface PaymentStatus {
+  transaction_id: string;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled' | 'expired';
+  amount: number;
+  plan_type: string;
+  is_vip: boolean;
+  created_at: string;
+  expires_at: string;
+  updated_at?: string;
+}
+
+// Função principal para criar preferência PIX
+export const createPixPayment = async (data: PixPaymentData): Promise<PixPreferenceResponse> => {
+  try {
+    console.log('🔄 Criando pagamento PIX:', data);
+    
+    // Validação dos parâmetros
+    if (!data.planType || !data.userEmail) {
+      throw new Error('Parâmetros obrigatórios: planType e userEmail');
+    }
+    
+    if (!['monthly', 'yearly'].includes(data.planType)) {
+      throw new Error(`Tipo de plano inválido: ${data.planType}`);
+    }
+    
+    const response = await axios.post(`${API_URL}/api/pix/create-preference`, data);
+    
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Erro ao criar preferência PIX');
+    }
+    
+    console.log('✅ Preferência PIX criada:', response.data);
+    return response.data;
+    
+  } catch (error: any) {
+    console.error('❌ Erro ao criar pagamento PIX:', error);
+    
+    const errorMessage = error.response?.data?.message || error.message || 'Erro ao criar pagamento PIX';
+    toast.error(errorMessage);
+    
+    throw new Error(errorMessage);
+  }
 };
 
-// Função mantida para compatibilidade
-export const redirectToCheckout = (initPoint: string) => {
-  if (isUrlSafe(initPoint)) {
-    safeRedirect(initPoint, '/dashboard');
-  } else {
-    toast.error('Link de pagamento inválido');
+// Função para verificar status do pagamento
+export const checkPaymentStatus = async (transactionId: string): Promise<PaymentStatus> => {
+  try {
+    console.log('🔍 Verificando status do pagamento:', transactionId);
+    
+    const response = await axios.get(`${API_URL}/api/pix/status/${transactionId}`);
+    
+    console.log('📊 Status do pagamento:', response.data);
+    return response.data;
+    
+  } catch (error: any) {
+    console.error('❌ Erro ao verificar status:', error);
+    
+    const errorMessage = error.response?.data?.message || error.message || 'Erro ao verificar status do pagamento';
+    throw new Error(errorMessage);
   }
+};
+
+// Função para iniciar processo de pagamento PIX (substitui redirectToPayment)
+export const startPixPayment = async (planType: 'monthly' | 'yearly', isVip: boolean, userEmail: string) => {
+  try {
+    console.log('🚀 Iniciando pagamento PIX:', { planType, isVip, userEmail });
+    
+    if (!userEmail) {
+      toast.error('Email do usuário é obrigatório para pagamento PIX');
+      return null;
+    }
+    
+    const paymentData: PixPaymentData = {
+      planType,
+      isVip,
+      userEmail
+    };
+    
+    const preference = await createPixPayment(paymentData);
+    
+    console.log('✅ Pagamento PIX iniciado com sucesso');
+    return preference;
+    
+  } catch (error: any) {
+    console.error('❌ Erro ao iniciar pagamento PIX:', error);
+    toast.error('Erro ao iniciar pagamento PIX. Tente novamente.');
+    return null;
+  }
+};
+
+// Função para obter informações do plano
+export const getPlanInfo = (planType: 'monthly' | 'yearly', isVip: boolean) => {
+  const planPrices = {
+    monthly: {
+      normal: 29.90,
+      vip: 49.90
+    },
+    yearly: {
+      normal: 299.90,
+      vip: 499.90
+    }
+  };
+  
+  const price = isVip ? planPrices[planType].vip : planPrices[planType].normal;
+  const planName = `OneDrip ${planType === 'monthly' ? 'Mensal' : 'Anual'}${isVip ? ' VIP' : ''}`;
+  
+  return {
+    name: planName,
+    price,
+    type: planType,
+    isVip
+  };
+};
+
+// Funções mantidas para compatibilidade (deprecated)
+export const redirectToPayment = (planType: 'monthly' | 'yearly', isVip: boolean) => {
+  console.warn('⚠️ redirectToPayment está deprecated. Use startPixPayment ao invés.');
+  toast.error('Função de pagamento desatualizada. Atualize a página e tente novamente.');
+};
+
+export const createPayment = async (data: PixPaymentData) => {
+  console.warn('⚠️ createPayment está deprecated. Use createPixPayment ao invés.');
+  return createPixPayment(data);
+};
+
+export const redirectToCheckout = (initPoint: string) => {
+  console.warn('⚠️ redirectToCheckout está deprecated.');
+  toast.error('Função de checkout desatualizada. Use o novo sistema PIX.');
 };

@@ -26,47 +26,21 @@ import { FinalCTA } from './components/FinalCTA';
 
 
 // Importando serviço de pagamento
-import { redirectToPayment } from '@/services/paymentService';
-
-// Configuração do MercadoPago
-declare global {
-  interface Window {
-    $MPC_loaded?: boolean;
-    attachEvent?: (event: string, callback: () => void) => void;
-  }
-}
+import { startPixPayment, type PixPreferenceResponse } from '@/services/paymentService';
+import PixPaymentModal from '@/components/PixPaymentModal';
+import { toast } from 'sonner';
 
 type BillingCycle = 'monthly' | 'yearly';
 
 export const PlansPage = () => {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [isVipSelected, setIsVipSelected] = useState(false);
+  const [isPixModalOpen, setIsPixModalOpen] = useState(false);
+  const [pixPaymentData, setPixPaymentData] = useState<PixPreferenceResponse | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const navigate = useNavigate();
 
-  // Carregamento do script do MercadoPago
-  useEffect(() => {
-    const carregarScriptMercadoPago = () => {
-      if (window.$MPC_loaded) return;
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.async = true;
-      script.src = `${window.location.protocol}//secure.mlstatic.com/mptools/render.js`;
-      const firstScript = document.getElementsByTagName('script')[0];
-      if (firstScript && firstScript.parentNode) {
-        firstScript.parentNode.insertBefore(script, firstScript);
-      }
-      window.$MPC_loaded = true;
-    };
 
-    if (window.$MPC_loaded !== true) {
-      if (window.attachEvent) {
-        window.attachEvent('onload', carregarScriptMercadoPago);
-      } else {
-        window.addEventListener('load', carregarScriptMercadoPago, false);
-      }
-    }
-    carregarScriptMercadoPago();
-  }, []);
 
   // Obter dados do plano atual baseado no ciclo selecionado
   const getCurrentPlanData = () => {
@@ -76,9 +50,43 @@ export const PlansPage = () => {
   };
 
   // Funções de ação
-  const aoSelecionarPlano = () => {
-    // Redirecionar diretamente para o MercadoPago usando o novo serviço
-    redirectToPayment(billingCycle, isVipSelected);
+  const aoSelecionarPlano = async () => {
+    try {
+      setIsProcessingPayment(true);
+      
+      // Email do usuário (em produção, pegar do contexto de autenticação)
+      const userEmail = 'usuario@exemplo.com'; // TODO: Pegar do contexto de usuário
+      
+      console.log('🚀 Iniciando pagamento PIX:', { billingCycle, isVipSelected, userEmail });
+      
+      const paymentData = await startPixPayment(billingCycle, isVipSelected, userEmail);
+      
+      if (paymentData) {
+        setPixPaymentData(paymentData);
+        setIsPixModalOpen(true);
+        toast.success('Código PIX gerado com sucesso!');
+      } else {
+        toast.error('Erro ao gerar código PIX. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('❌ Erro ao processar pagamento:', error);
+      toast.error('Erro ao processar pagamento. Tente novamente.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+  
+  const handlePaymentSuccess = () => {
+    toast.success('Pagamento aprovado! Redirecionando...');
+    // Redirecionar para página de sucesso ou dashboard
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 2000);
+  };
+  
+  const handleClosePixModal = () => {
+    setIsPixModalOpen(false);
+    setPixPaymentData(null);
   };
 
   const aoVoltar = () => {
@@ -137,6 +145,7 @@ export const PlansPage = () => {
           aoSelecionarPlano={aoSelecionarPlano}
           isVip={isVipSelected}
           onVipToggle={setIsVipSelected}
+          isProcessing={isProcessingPayment}
         />
 
         {/* Seção de Depoimentos */}
@@ -161,10 +170,19 @@ export const PlansPage = () => {
           informacoesExtras={getCurrentPlanData().informacoes_extras}
           botaoTexto={PLANS_CONTENT.secao_final.botao_texto}
           aoSelecionarPlano={aoSelecionarPlano}
+          isProcessing={isProcessingPayment}
         />
       </div>
 
-
+      {/* Modal de Pagamento PIX */}
+      {pixPaymentData && (
+        <PixPaymentModal
+          isOpen={isPixModalOpen}
+          onClose={handleClosePixModal}
+          paymentData={pixPaymentData}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 };

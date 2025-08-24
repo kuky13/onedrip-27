@@ -4,6 +4,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Check, Loader2, CreditCard, Crown } from 'lucide-react';
 import { redirectToPayment } from '../../services/paymentService';
 import { PLANS_CONTENT } from '../data/content';
+import { PixSelector, PixPaymentInterface } from '@/components/pix';
+import type { PlanType } from '../../../shared/types/pix';
 
 interface DadosPlano {
   nome: string;
@@ -28,11 +30,14 @@ interface PlanCardProps {
   isVip?: boolean;
   userEmail?: string;
   onVipToggle?: (isVip: boolean) => void;
+  isProcessing?: boolean;
 }
 
-export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 'user@example.com', onVipToggle }: PlanCardProps) => {
+export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 'user@example.com', onVipToggle, isProcessing = false }: PlanCardProps) => {
   const [loading, setLoading] = useState(false);
   const [vipSelected, setVipSelected] = useState(isVip);
+  const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'pix'>('mercadopago');
+  const [showPixPayment, setShowPixPayment] = useState(false);
   const vipData = PLANS_CONTENT.vip;
 
   const handleVipToggle = (checked: boolean) => {
@@ -51,16 +56,29 @@ export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 
   const handlePayment = () => {
     setLoading(true);
     try {
-      redirectToPayment({
-        planType: plano.ciclo, // 'monthly' ou 'yearly'
-        isVip: vipSelected // Usar vipSelected em vez de isVip prop
-      });
+      if (paymentMethod === 'pix') {
+        setShowPixPayment(true);
+      } else {
+        redirectToPayment(
+          plano.ciclo, // 'monthly' ou 'yearly'
+          vipSelected // Usar vipSelected em vez de isVip prop
+        );
+      }
     } catch (error) {
       console.error('Erro no pagamento:', error);
       alert('Erro ao processar pagamento. Tente novamente.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const getPlanType = (): PlanType => {
+    return plano.ciclo === 'monthly' ? 'monthly' : 'yearly';
+  };
+
+  const handlePixPaymentClose = () => {
+    setShowPixPayment(false);
+    setLoading(false);
   };
 
   const handleButtonClick = () => {
@@ -186,17 +204,34 @@ export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 
             </div>
           </div>
           
+          {/* Seletor de Método de Pagamento */}
+          <div className="mb-6">
+            <PixSelector
+              plan={{
+                id: `plan-${plano.nome.toLowerCase().replace(/\s+/g, '-')}`,
+                name: plano.nome,
+                type: getPlanType(),
+                price: calculateTotalPrice(),
+                currency: 'BRL',
+                period: plano.periodo,
+                isVip: vipSelected
+              }}
+              selectedMethod={paymentMethod}
+              onMethodChange={setPaymentMethod}
+            />
+          </div>
+
           {/* Botão de Ação */}
           <Button 
             onClick={handleButtonClick}
-            disabled={loading}
+            disabled={loading || isProcessing}
             className={`w-full text-lg py-4 mb-4 transition-all duration-300 ${
               vipSelected 
                 ? 'btn-premium bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90' 
                 : 'btn-premium'
             }`}
           >
-            {loading ? (
+            {(loading || isProcessing) ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processando...
@@ -208,10 +243,28 @@ export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 
                 ) : (
                   <CreditCard className="mr-2 h-4 w-4" />
                 )}
-                {vipSelected ? `${plano.botao_texto} VIP` : plano.botao_texto}
+                {paymentMethod === 'pix' ? 'Pagar com PIX' : (vipSelected ? `${plano.botao_texto} VIP` : plano.botao_texto)}
               </>
             )}
           </Button>
+
+          {/* Interface de Pagamento PIX */}
+          {showPixPayment && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-card rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <PixPaymentInterface
+                  planType={getPlanType()}
+                  isVip={vipSelected}
+                  userEmail={userEmail}
+                  onClose={handlePixPaymentClose}
+                  onSuccess={() => {
+                    handlePixPaymentClose();
+                    // Aqui você pode adicionar lógica adicional de sucesso
+                  }}
+                />
+              </div>
+            </div>
+          )}
           
           {/* Informações de Suporte */}
           {plano.mostrar_suporte && (

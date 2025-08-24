@@ -1,0 +1,14 @@
+[
+  {
+    "id": "onedrip-1756050531222-monthly-normal",
+    "preferenceId": "1376810125-d89c3078-9e67-4bb0-ad94-75e058d0bae0",
+    "planType": "monthly",
+    "isVip": false,
+    "userEmail": "test@example.com",
+    "amount": 29.9,
+    "status": "pending",
+    "createdAt": "2025-08-24T15:48:51.907Z",
+    "expiresAt": "2025-08-24T16:18:51.907Z",
+    "updatedAt": "2025-08-24T15:48:51.907Z"
+  }
+]

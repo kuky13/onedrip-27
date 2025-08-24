@@ -10,13 +10,9 @@ import { PlanCard } from '@/components/plans/PlanCard';
 import { TestimonialsSection } from '@/components/plans/TestimonialsSection';
 import { FAQSection } from '@/components/plans/FAQSection';
 import { FinalCTA } from '@/components/plans/FinalCTA';
-import { redirectToPayment } from '@/services/paymentService';
-declare global {
-  interface Window {
-    $MPC_loaded?: boolean;
-    attachEvent?: (event: string, callback: () => void) => void;
-  }
-}
+import { startPixPayment, type PixPreferenceResponse } from '@/services/paymentService';
+import PixPaymentModal from '@/components/PixPaymentModal';
+
 interface SiteSettings {
   plan_name: string;
   plan_description: string;
@@ -66,6 +62,8 @@ interface SiteSettings {
 export const PlansPage = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isVip, setIsVip] = useState(false);
+  const [isPixModalOpen, setIsPixModalOpen] = useState(false);
+  const [pixPaymentData, setPixPaymentData] = useState<PixPreferenceResponse | null>(null);
   const navigate = useNavigate();
 
   // Fetch site settings from database
@@ -88,33 +86,36 @@ export const PlansPage = () => {
       return data;
     }
   });
-  useEffect(() => {
-    // Load MercadoPago script
-    const loadMercadoPagoScript = () => {
-      if (window.$MPC_loaded) return;
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.async = true;
-      script.src = `${window.location.protocol}//secure.mlstatic.com/mptools/render.js`;
-      const firstScript = document.getElementsByTagName('script')[0];
-      if (firstScript && firstScript.parentNode) {
-        firstScript.parentNode.insertBefore(script, firstScript);
-      }
-      window.$MPC_loaded = true;
-    };
-    if (window.$MPC_loaded !== true) {
-      if (window.attachEvent) {
-        window.attachEvent('onload', loadMercadoPagoScript);
-      } else {
-        window.addEventListener('load', loadMercadoPagoScript, false);
-      }
-    }
-    loadMercadoPagoScript();
-  }, []);
+
   useEffect(() => { document.title = "Planos | OneDrip"; }, []);
-  const handlePlanSelection = () => {
-    console.log('Redirecting to payment with:', { billingCycle, isVip });
-    redirectToPayment(billingCycle, isVip);
+  
+  const handlePixPayment = async () => {
+    try {
+      console.log('Iniciando pagamento PIX:', { billingCycle, isVip });
+      
+      // Email temporário para desenvolvimento - em produção, pegar do usuário logado
+      const userEmail = 'usuario@exemplo.com';
+      
+      const paymentData = await startPixPayment(billingCycle, isVip, userEmail);
+      
+      if (paymentData) {
+        setPixPaymentData(paymentData);
+        setIsPixModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Erro ao iniciar pagamento PIX:', error);
+    }
+  };
+  
+  const handlePixModalClose = () => {
+    setIsPixModalOpen(false);
+    setPixPaymentData(null);
+  };
+  
+  const handlePaymentSuccess = () => {
+    console.log('Pagamento realizado com sucesso!');
+    // Aqui você pode redirecionar para uma página de sucesso ou atualizar o estado do usuário
+    navigate('/dashboard'); // ou outra página apropriada
   };
 
   const handleGoBack = () => {
@@ -240,7 +241,7 @@ export const PlansPage = () => {
             plan_period: billingCycle === 'yearly' ? '/ano' : config.plan_period,
             plan_features: isVip ? [...config.plan_features, "Recursos VIP exclusivos", "Suporte prioritário", "Funcionalidades avançadas"] : config.plan_features,
           }} 
-          onPlanSelection={handlePlanSelection} 
+          onPlanSelection={handlePixPayment} 
         />
         <TestimonialsSection 
           title={config.testimonials_section_title}
@@ -257,7 +258,7 @@ export const PlansPage = () => {
         <FinalCTA 
           additionalInfo={config.additional_info} 
           ctaButtonText={config.cta_button_text}
-          onPlanSelection={handlePlanSelection}
+          onPlanSelection={handlePixPayment}
         />
         
         {/* Footer com links para políticas */}
@@ -290,7 +291,7 @@ export const PlansPage = () => {
       {/* Sticky mobile CTA */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/80 backdrop-blur-md p-3 md:hidden">
         <div className="container mx-auto flex items-center justify-between gap-3">
-          <Button onClick={handlePlanSelection} className="flex-1">
+          <Button onClick={handlePixPayment} className="flex-1">
             {config.cta_button_text}
           </Button>
           <a
@@ -303,6 +304,16 @@ export const PlansPage = () => {
           </a>
         </div>
       </div>
+      
+      {/* Modal PIX */}
+      {isPixModalOpen && pixPaymentData && (
+        <PixPaymentModal
+          isOpen={isPixModalOpen}
+          onClose={handlePixModalClose}
+          paymentData={pixPaymentData}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
 
 
     </div>;

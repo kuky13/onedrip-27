@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Inicialização otimizada do auth
+  // Inicialização simplificada e robusta do auth
   useEffect(() => {
     console.log('🔐 Iniciando AuthProvider...');
     
@@ -123,83 +123,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         console.log('🔍 Verificando sessão existente...');
         
-        // DEBUG: Verificar se localStorage tem tokens (apenas em desenvolvimento)
-        if (import.meta.env.DEV) {
-          const authToken = await getSecureItem('sb-oghjlypdnmqecaavekyr-auth-token');
-          console.log('🔑 Token do Supabase existe?', authToken ? 'SIM' : 'NÃO');
-          
-          if (authToken) {
-            try {
-              const tokenData = typeof authToken === 'string' ? JSON.parse(authToken) : authToken;
-              console.log('📊 Dados do token:', {
-                hasAccessToken: !!tokenData?.access_token,
-                hasRefreshToken: !!tokenData?.refresh_token,
-                expiresAt: tokenData?.expires_at,
-                isExpired: tokenData?.expires_at ? new Date(tokenData.expires_at * 1000) < new Date() : 'UNKNOWN'
-              });
-            } catch (parseError) {
-              console.warn('⚠️ Erro ao parsear token:', parseError);
-            }
-          }
-        }
-        
-        // Primeiro, tentar recuperar a sessão
+        // Tentar recuperar a sessão de forma simples
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('❌ Erro ao obter sessão:', error);
-          // Se houver erro, tentar refresh da sessão
-          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-          if (refreshError) {
-            console.error('❌ Erro ao fazer refresh da sessão:', refreshError);
-            // Limpar dados inválidos
-            await supabase.auth.signOut();
-          } else if (refreshData.session) {
-            console.log('✅ Sessão recuperada via refresh');
-            setSession(refreshData.session);
-            setUser(refreshData.session.user);
-          }
+          // Em caso de erro, apenas limpar e continuar
+          setSession(null);
+          setUser(null);
         } else {
-          console.log('📋 Resultado getSession:', {
-            hasSession: !!session,
-            sessionUserId: session?.user?.id,
-            sessionExpiresAt: session?.expires_at,
-            isExpired: session?.expires_at ? new Date(session.expires_at * 1000) < new Date() : false
-          });
-          
-          // Verificar se a sessão não expirou
-          if (session && session.expires_at) {
-            const expirationTime = new Date(session.expires_at * 1000);
-            const now = new Date();
-            
-            if (expirationTime <= now) {
-              console.log('⏰ Sessão expirada, tentando refresh...');
-              const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-              if (refreshError) {
-                console.error('❌ Erro ao fazer refresh da sessão expirada:', refreshError);
-                await supabase.auth.signOut();
-              } else if (refreshData.session) {
-                console.log('✅ Sessão expirada renovada com sucesso');
-                setSession(refreshData.session);
-                setUser(refreshData.session.user);
-              }
-            } else {
-              setSession(session);
-              setUser(session?.user ?? null);
-            }
-          } else {
-            setSession(session);
-            setUser(session?.user ?? null);
-          }
+          console.log('📋 Sessão obtida:', !!session);
+          setSession(session);
+          setUser(session?.user ?? null);
         }
       } catch (error) {
         console.error('❌ Erro na inicialização:', error);
-        // Em caso de erro crítico, limpar tudo
-        try {
-          await supabase.auth.signOut();
-        } catch (signOutError) {
-          console.error('❌ Erro ao fazer signOut de emergência:', signOutError);
-        }
+        // Em caso de erro crítico, apenas definir como não autenticado
+        setSession(null);
+        setUser(null);
       } finally {
         setLoading(false);
         setIsInitialized(true);
@@ -209,101 +150,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Chamar a inicialização imediatamente
     initializeAuth();
 
-    // Configurar listener de mudanças de autenticação (após a inicialização inicial)
+    // Listener simplificado para mudanças de estado de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('🔄 Auth state change:', event, !!session);
-        console.log('🔄 Session details:', session ? {
-          access_token: session.access_token ? 'EXISTE' : 'AUSENTE',
-          refresh_token: session.refresh_token ? 'EXISTE' : 'AUSENTE',
-          expires_at: session.expires_at,
-          user_id: session.user?.id,
-          isExpired: session.expires_at ? new Date(session.expires_at * 1000) < new Date() : false
-        } : 'NENHUMA SESSÃO');
-        
-        // Verificar se a sessão é válida antes de definir
-        if (session && session.expires_at) {
-          const expirationTime = new Date(session.expires_at * 1000);
-          const now = new Date();
-          
-          if (expirationTime <= now) {
-            console.log('⏰ Sessão recebida já está expirada, ignorando...');
-            return;
-          }
-        }
-        
+
+        // Atualizar estado imediatamente
         setSession(session);
         setUser(session?.user ?? null);
 
-        // Integrar com sistema persistente apenas em login
-        if (event === 'SIGNED_IN' && session) {
-          setTimeout(() => {
-            manageSessionPersistence(session);
-          }, 0);
-        }
-
-        // Tratar eventos específicos da página de verificação
-        if (window.location.pathname === '/verify') {
-          switch (event) {
-            case 'PASSWORD_RECOVERY':
-              window.location.href = '/reset-password';
-              return;
-            case 'USER_UPDATED':
-              showSuccess({
-                title: 'Email atualizado!',
-                description: 'Seu endereço de e-mail foi confirmado com sucesso.',
-              });
-              window.location.href = '/dashboard';
-              return;
-            case 'SIGNED_IN':
-              showSuccess({
-                title: 'Conta confirmada!',
-                description: 'Bem-vindo! Seu cadastro foi concluído.',
-              });
-              window.location.href = '/dashboard';
-              return;
-          }
-        }
-
-        // Criar perfil para novos usuários (apenas fora da página de verificação)
-        if (event === 'SIGNED_IN' && session?.user && window.location.pathname !== '/verify') {
-          console.log('👤 Verificando perfil do usuário...');
-          setTimeout(async () => {
-            try {
-              const { data: existingProfile } = await supabase
-                .from('user_profiles')
-                .select('id')
-                .eq('id', session.user.id)
-                .maybeSingle();
-
-              if (!existingProfile) {
-                console.log('📝 Criando novo perfil...');
-                await supabase
-                  .from('user_profiles')
-                  .insert({
-                    id: session.user.id,
-                    name: session.user.user_metadata?.name || session.user.email || 'Usuário',
-                    role: 'user'
-                  });
-              }
-            } catch (error) {
-              console.error('❌ Erro ao gerenciar perfil:', error);
-            }
-          }, 0);
-        }
-
-        // Lidar com TOKEN_REFRESHED para manter a sessão ativa
-        if (event === 'TOKEN_REFRESHED' && session) {
-          if (import.meta.env.DEV) {
-            console.log('🔄 Token renovado automaticamente');
-          }
-        }
-
-        // Lidar com SIGNED_OUT
+        // Tratar apenas eventos essenciais
         if (event === 'SIGNED_OUT') {
-          console.log('🚪 Usuário desconectado');
-          setSession(null);
-          setUser(null);
+          console.log('👋 Usuário deslogado');
+        } else if (event === 'SIGNED_IN' && session?.user) {
+          console.log('👋 Usuário logado');
+          
+          // Verificar se precisa ir para verificação
+          if (!session.user.email_confirmed) {
+            console.log('📧 Email não confirmado, redirecionando para verificação');
+            window.location.href = '/verify';
+            return;
+          }
+
+          // Carregar perfil do usuário de forma simples
+          try {
+            const { data: existingProfile } = await supabase
+              .from('user_profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .maybeSingle();
+
+            if (!existingProfile) {
+              console.log('📝 Criando novo perfil...');
+              await supabase
+                .from('user_profiles')
+                .insert({
+                  id: session.user.id,
+                  name: session.user.user_metadata?.name || session.user.email || 'Usuário',
+                  role: 'user'
+                });
+            }
+          } catch (error) {
+            console.error('❌ Erro ao carregar perfil:', error);
+          }
         }
       }
     );

@@ -10,6 +10,11 @@ import { FadeInUp, ScaleOnHover, StaggerList } from '@/components/ui/animations'
 import { Heading, Text } from '@/components/ui/typography';
 import { useAppInfo, useMarketingConfig } from '@/hooks/useAppConfig';
 
+// Função para abrir WhatsApp
+const openWhatsApp = (url: string) => {
+  window.open(url, '_blank', 'noopener,noreferrer');
+};
+
 
 const Index = () => {
   const {

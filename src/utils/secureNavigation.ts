@@ -22,7 +22,8 @@ const ALLOWED_EXTERNAL_DOMAINS = [
   'web.whatsapp.com',
   'mercadopago.com.br',
   'mercadopago.com',
-  'mp.com.br'
+  'mp.com.br',
+  'mpago.li'
 ];
 
 /**

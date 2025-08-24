@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .test-button {
+            background-color: #fec832;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de Carregamento</h1>
+        <p>Se você consegue ver esta página, o servidor está funcionando corretamente.</p>
+        <button class="test-button" onclick="testJS()">Testar JavaScript</button>
+        <div id="result"></div>
+    </div>
+    
+    <script>
+        function testJS() {
+            document.getElementById('result').innerHTML = '<p style="color: #3ECF50;">✅ JavaScript está funcionando!</p>';
+        }
+        
+        console.log('✅ Página de teste carregada com sucesso!');
+    </script>
+</body>
+</html>
