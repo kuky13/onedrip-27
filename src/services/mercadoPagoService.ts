@@ -40,8 +40,8 @@ const getMercadoPagoConfig = (): MercadoPagoConfig | null => {
   return {
     accessToken,
     publicKey,
-    webhookUrl: 'http://localhost:3001/api/pix/webhook',
-    notificationUrl: 'http://localhost:3001/api/pix/webhook'
+    webhookUrl: 'https://oghjlypdnmqecaavekyr.supabase.co/functions/v1/pix-webhook',
+    notificationUrl: 'https://oghjlypdnmqecaavekyr.supabase.co/functions/v1/pix-webhook'
   };
 };
 
@@ -374,10 +374,23 @@ export class MercadoPagoService {
   // Gerar código PIX e QR Code
   private async generatePixCode(preferenceId: string, amount: number, description: string): Promise<PixCode> {
     try {
-      console.log('🔍 Buscando dados da preferência:', preferenceId);
+      console.log('🔍 [PIX] Iniciando geração do código PIX');
+      console.log('🔍 [PIX] Preference ID:', preferenceId);
+      console.log('🔍 [PIX] Amount:', amount);
+      console.log('🔍 [PIX] Description:', description);
+      console.log('🔍 [PIX] Access Token presente:', !!this.config?.accessToken);
+      console.log('🔍 [PIX] Base URL:', this.axiosInstance.defaults.baseURL);
+      
       // Buscar dados da preferência para obter o código PIX
+      console.log('🔍 [PIX] Buscando dados da preferência:', preferenceId);
       const preferenceResponse = await this.axiosInstance.get(`/checkout/preferences/${preferenceId}`);
-      console.log('📋 Dados da preferência obtidos:', preferenceResponse.data);
+      console.log('📋 [PIX] Dados da preferência obtidos:', JSON.stringify(preferenceResponse.data, null, 2));
+      
+      // Verificar se a preferência foi encontrada
+      if (!preferenceResponse.data || !preferenceResponse.data.id) {
+        console.error('❌ [PIX] Preferência não encontrada ou inválida');
+        throw new Error('Preferência de pagamento não encontrada');
+      }
       
       // Gerar código PIX usando a API do Mercado Pago
       const pixData = {
@@ -389,17 +402,42 @@ export class MercadoPagoService {
         }
       };
       
-      console.log('💳 Dados do PIX para envio:', JSON.stringify(pixData, null, 2));
-      const pixResponse = await this.axiosInstance.post('/v1/payments', pixData);
-      console.log('📥 Resposta da criação do PIX:', pixResponse.data);
+      console.log('💳 [PIX] Dados do PIX para envio:', JSON.stringify(pixData, null, 2));
+      console.log('💳 [PIX] Headers da requisição:', this.axiosInstance.defaults.headers);
       
-      if (!pixResponse.data || !pixResponse.data.point_of_interaction) {
-        throw new Error('Erro ao gerar código PIX');
+      const pixResponse = await this.axiosInstance.post('/v1/payments', pixData);
+      console.log('📥 [PIX] Status da resposta:', pixResponse.status);
+      console.log('📥 [PIX] Resposta completa da criação do PIX:', JSON.stringify(pixResponse.data, null, 2));
+      
+      // Verificar se a resposta contém os dados necessários
+      if (!pixResponse.data) {
+        console.error('❌ [PIX] Resposta vazia da API do Mercado Pago');
+        throw new Error('Resposta vazia da API do Mercado Pago');
+      }
+      
+      if (!pixResponse.data.point_of_interaction) {
+        console.error('❌ [PIX] point_of_interaction não encontrado na resposta');
+        console.error('❌ [PIX] Estrutura da resposta:', Object.keys(pixResponse.data));
+        throw new Error('Dados de interação PIX não encontrados na resposta da API');
+      }
+      
+      if (!pixResponse.data.point_of_interaction.transaction_data) {
+        console.error('❌ [PIX] transaction_data não encontrado');
+        console.error('❌ [PIX] Estrutura do point_of_interaction:', Object.keys(pixResponse.data.point_of_interaction));
+        throw new Error('Dados da transação PIX não encontrados');
       }
 
       const pixInfo = pixResponse.data.point_of_interaction.transaction_data;
+      console.log('🎯 [PIX] Dados da transação PIX:', JSON.stringify(pixInfo, null, 2));
       
-      return {
+      // Verificar se o código PIX foi gerado
+      if (!pixInfo.qr_code && !pixInfo.qr_code_base64) {
+        console.error('❌ [PIX] Código PIX não foi gerado');
+        console.error('❌ [PIX] Dados disponíveis:', Object.keys(pixInfo));
+        throw new Error('Código PIX não foi gerado pela API do Mercado Pago');
+      }
+      
+      const pixCode = {
         id: this.generatePixCodeId(),
         code: pixInfo.qr_code || '',
         qrCodeBase64: pixInfo.qr_code_base64 || '',
@@ -407,18 +445,50 @@ export class MercadoPagoService {
         amount: amount,
         description: description
       };
+      
+      console.log('✅ [PIX] Código PIX gerado com sucesso:', {
+        id: pixCode.id,
+        hasCode: !!pixCode.code,
+        hasQrCodeBase64: !!pixCode.qrCodeBase64,
+        amount: pixCode.amount
+      });
+      
+      return pixCode;
 
     } catch (error) {
-      console.error('❌ Erro ao gerar código PIX:', error);
+      console.error('❌ [PIX] Erro ao gerar código PIX:', error);
       
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as any;
-        console.error('🌐 Status HTTP:', axiosError.response?.status);
-        console.error('📄 Dados do erro:', axiosError.response?.data);
-        console.error('🔗 URL da requisição:', axiosError.config?.url);
+        console.error('🌐 [PIX] Status HTTP:', axiosError.response?.status);
+        console.error('📄 [PIX] Dados do erro:', JSON.stringify(axiosError.response?.data, null, 2));
+        console.error('🔗 [PIX] URL da requisição:', axiosError.config?.url);
+        console.error('🔗 [PIX] Método da requisição:', axiosError.config?.method);
+        console.error('🔗 [PIX] Headers da requisição:', axiosError.config?.headers);
+        
+        // Tratar erros específicos da API
+        if (axiosError.response?.status === 401) {
+          throw new Error('Credenciais do Mercado Pago inválidas. Verifique o Access Token.');
+        } else if (axiosError.response?.status === 400) {
+          const errorData = axiosError.response?.data;
+          if (errorData?.message) {
+            throw new Error(`Erro na requisição: ${errorData.message}`);
+          } else {
+            throw new Error('Dados inválidos enviados para a API do Mercado Pago');
+          }
+        } else if (axiosError.response?.status === 404) {
+          throw new Error('Endpoint da API do Mercado Pago não encontrado');
+        } else if (axiosError.response?.status >= 500) {
+          throw new Error('Erro interno da API do Mercado Pago. Tente novamente em alguns minutos.');
+        }
       }
       
-      throw new Error('Falha ao gerar código PIX');
+      // Se for um erro conhecido, re-lançar
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      throw new Error('Falha inesperada ao gerar código PIX');
     }
   }
 

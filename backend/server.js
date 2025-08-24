@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { MercadoPagoConfig, Payment, Preference } = require('mercadopago');
+const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 const crypto = require('crypto');
 const path = require('path');
 const pixTransactionIntegration = require('./services/pixTransactionIntegration');
@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3001;
 
 // Configuração do CORS
 app.use(cors({
-  origin: ['http://localhost:8081', 'http://localhost:3000', 'http://localhost:5173'],
+  origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -264,6 +264,69 @@ app.get('/api/config', (req, res) => {
   });
 });
 
+// Endpoint para validar configuração completa
+app.get('/api/config/validate', async (req, res) => {
+  try {
+    console.log('🔍 Validando configuração do sistema...');
+    
+    // Verificar variáveis de ambiente essenciais
+    const requiredEnvVars = {
+      MERCADO_PAGO_ACCESS_TOKEN: process.env.MERCADO_PAGO_ACCESS_TOKEN,
+      MERCADO_PAGO_WEBHOOK_SECRET: process.env.MERCADO_PAGO_WEBHOOK_SECRET
+    };
+    
+    const missingVars = Object.entries(requiredEnvVars)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key);
+    
+    if (missingVars.length > 0) {
+      console.error('❌ Variáveis de ambiente faltando:', missingVars);
+      return res.json({
+        success: false,
+        message: `Variáveis de ambiente não configuradas: ${missingVars.join(', ')}`,
+        missingVars
+      });
+    }
+    
+    // Testar conectividade com Mercado Pago
+    try {
+      const testResponse = await fetch('https://api.mercadopago.com/v1/payment_methods', {
+        headers: {
+          'Authorization': `Bearer ${process.env.MERCADO_PAGO_ACCESS_TOKEN}`
+        }
+      });
+      
+      if (!testResponse.ok) {
+        console.error('❌ Token do Mercado Pago inválido:', testResponse.status);
+        return res.json({
+          success: false,
+          message: 'Token do Mercado Pago inválido ou expirado'
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erro ao conectar com Mercado Pago:', error.message);
+      return res.json({
+        success: false,
+        message: 'Erro de conectividade com Mercado Pago'
+      });
+    }
+    
+    console.log('✅ Configuração validada com sucesso');
+    res.json({
+      success: true,
+      message: 'Sistema configurado corretamente',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro na validação de configuração:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno na validação de configuração'
+    });
+  }
+});
+
 // Endpoint para obter estatísticas das transações
 app.get('/api/transactions/stats', (req, res) => {
   try {
@@ -313,10 +376,10 @@ app.post('/api/transactions/check-expired', (req, res) => {
   }
 });
 
-// Endpoint para criar preferência PIX
+// Endpoint para criar pagamento PIX
 app.post('/api/pix/create-preference', async (req, res) => {
   try {
-    console.log('🔄 Criando preferência PIX:', req.body);
+    console.log('🔄 Criando pagamento PIX:', req.body);
     
     if (!mercadoPagoClient) {
       return res.status(500).json({ error: 'Mercado Pago não configurado' });
@@ -348,56 +411,34 @@ app.post('/api/pix/create-preference', async (req, res) => {
     const price = isVip ? planPrices[planType].vip : planPrices[planType].normal;
     const planName = `OneDrip ${planType === 'monthly' ? 'Mensal' : 'Anual'}${isVip ? ' VIP' : ''}`;
     
-    // Criar preferência
-    const preference = new Preference(mercadoPagoClient);
+    // Criar pagamento PIX direto
+    const payment = new Payment(mercadoPagoClient);
     
-    const preferenceData = {
-      items: [{
-        id: `onedrip-${planType}-${isVip ? 'vip' : 'normal'}`,
-        title: planName,
-        description: `Plano ${planName} - OneDrip Blueberry`,
-        quantity: 1,
-        unit_price: price,
-        currency_id: 'BRL'
-      }],
-      payer: {
-        email: userEmail
-      },
-      payment_methods: {
-        excluded_payment_types: [
-          { id: 'credit_card' },
-          { id: 'debit_card' },
-          { id: 'ticket' }
-        ],
-        included_payment_methods: [
-          { id: 'pix' }
-        ]
-      },
-      notification_url: `http://localhost:${PORT}/api/pix/webhook`,
-      back_urls: {
-        success: 'http://localhost:8080/payment-success',
-        failure: 'http://localhost:8080/payment-failure',
-        pending: 'http://localhost:8080/payment-status'
-      },
-      external_reference: `onedrip-${Date.now()}-${planType}-${isVip ? 'vip' : 'normal'}`,
-      expires: true,
-      expiration_date_from: new Date().toISOString(),
-      expiration_date_to: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutos
-    };
+    const paymentData = {
+       transaction_amount: price,
+       description: `${planName} - OneDrip Blueberry`,
+       payment_method_id: 'pix',
+       payer: {
+         email: userEmail
+       },
+       external_reference: `onedrip-${Date.now()}-${planType}-${isVip ? 'vip' : 'normal'}`,
+       date_of_expiration: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutos
+     };
 
-    const result = await preference.create({ body: preferenceData });
+    const result = await payment.create({ body: paymentData });
     
-    console.log('✅ Preferência PIX criada:', {
+    console.log('✅ Pagamento PIX criado:', {
       id: result.id,
-      init_point: result.init_point,
-      sandbox_init_point: result.sandbox_init_point
+      status: result.status,
+      qr_code: result.point_of_interaction?.transaction_data?.qr_code,
+      qr_code_base64: result.point_of_interaction?.transaction_data?.qr_code_base64
     });
 
     // Registrar transação no sistema interno
     const transactionId = result.external_reference;
     await pixTransactionIntegration.createTransaction({
       id: transactionId,
-      preferenceId: result.id,
+      preferenceId: result.id.toString(),
       planType,
       isVip,
       userEmail,
@@ -409,20 +450,20 @@ app.post('/api/pix/create-preference', async (req, res) => {
 
     res.json({
       success: true,
-      preference_id: result.id,
-      init_point: result.init_point,
-      sandbox_init_point: result.sandbox_init_point,
-      qr_code: result.qr_code,
-      qr_code_base64: result.qr_code_base64,
+      preference_id: result.id.toString(),
+      init_point: '#',
+      sandbox_init_point: '#',
+      qr_code: result.point_of_interaction?.transaction_data?.qr_code || 'Código PIX não disponível',
+      qr_code_base64: result.point_of_interaction?.transaction_data?.qr_code_base64,
       transaction_id: transactionId,
       amount: price,
-      expires_at: preferenceData.expiration_date_to
+      expires_at: paymentData.date_of_expiration
     });
     
   } catch (error) {
-    console.error('❌ Erro ao criar preferência PIX:', error.message);
+    console.error('❌ Erro ao criar pagamento PIX:', error.message);
     res.status(500).json({ 
-      error: 'Erro ao criar preferência PIX',
+      error: 'Erro ao criar pagamento PIX',
       message: error.message
     });
   }
