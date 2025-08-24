@@ -739,6 +739,54 @@ export type Database = {
         }
         Relationships: []
       }
+      pix_transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          expires_at: string
+          id: string
+          is_vip: boolean
+          mercado_pago_id: string | null
+          metadata: Json | null
+          pix_code: string | null
+          plan_type: string
+          qr_code: string | null
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          is_vip?: boolean
+          mercado_pago_id?: string | null
+          metadata?: Json | null
+          pix_code?: string | null
+          plan_type: string
+          qr_code?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          is_vip?: boolean
+          mercado_pago_id?: string | null
+          metadata?: Json | null
+          pix_code?: string | null
+          plan_type?: string
+          qr_code?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ranking_invaders: {
         Row: {
           created_at: string
@@ -1188,6 +1236,44 @@ export type Database = {
           whatsapp_number?: string
         }
         Relationships: []
+      }
+      transaction_logs: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          status_from: string | null
+          status_to: string | null
+          transaction_id: string | null
+          webhook_data: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          status_from?: string | null
+          status_to?: string | null
+          transaction_id?: string | null
+          webhook_data?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          status_from?: string | null
+          status_to?: string | null
+          transaction_id?: string | null
+          webhook_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_logs_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "pix_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_activity_metrics: {
         Row: {
