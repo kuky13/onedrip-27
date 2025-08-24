@@ -169,14 +169,16 @@ export interface EncryptedData {
 // Log de auditoria
 export interface AuditLog {
   id: string;
-  transactionId: string;
+  transactionId?: string;  // Opcional para logs gerais
   action: string;
   details: Record<string, any>;
   userId?: string;
   userEmail?: string;
   ipAddress?: string;
   userAgent?: string;
-  createdAt: Date;
+  severity?: 'info' | 'warning' | 'error';
+  timestamp?: Date; // Adicionado como opcional, será preenchido pelo serviço
+  createdAt?: Date; // Adicionado como opcional
 }
 
 // Estatísticas de transações
@@ -223,27 +225,4 @@ export interface PixSystemConfig {
   notificationDelay: number;
 }
 
-export default {
-  PixTransactionStatus,
-  PlanType,
-  PlanData,
-  PixCode,
-  PixTransaction,
-  CreatePixTransactionRequest,
-  CreatePixTransactionResponse,
-  PixStatusRequest,
-  PixStatusResponse,
-  MercadoPagoWebhook,
-  MercadoPagoPayment,
-  MercadoPagoConfig,
-  PaymentProofRequest,
-  PaymentProofResponse,
-  WhatsAppNotification,
-  SecurityConfig,
-  EncryptedData,
-  AuditLog,
-  TransactionStats,
-  TransactionFilters,
-  PaginatedTransactions,
-  PixSystemConfig
-};
+// Tipos já exportados individualmente acima

@@ -43,85 +43,7 @@ export const usePixPayment = (): UsePixPaymentResult => {
   // Última requisição para retry
   const [lastRequest, setLastRequest] = useState<CreatePixTransactionRequest | null>(null);
 
-  // Função para criar transação PIX
-  const createTransaction = async (planType: string, isVip: boolean = false) => {
-    console.log('🎯 usePixPayment: Iniciando createTransaction', { planType, isVip });
-    
-    if (!user?.email) {
-      console.error('❌ usePixPayment: Usuário não autenticado');
-      setError('Usuário não autenticado');
-      return;
-    }
-
-    console.log('👤 usePixPayment: Usuário autenticado:', user.email);
-    
-    setLoading(true);
-    setError(null);
-    setTransaction(null);
-
-    try {
-      console.log('🚀 usePixPayment: Chamando mercadoPagoService.createPixPayment');
-      console.log('📋 usePixPayment: Parâmetros:', { planType, isVip, userEmail: user.email });
-      
-      const response = await mercadoPagoService.createPixPayment({
-        userEmail: user.email,
-        planType,
-        isVip
-      });
-
-      console.log('✅ usePixPayment: Transação PIX criada com sucesso:', response);
-      setTransaction(response);
-      
-      // Log de auditoria
-      try {
-        await logAuditEvent({
-          action: 'pix_transaction_created',
-          details: {
-            transactionId: response.transactionId,
-            planType,
-            isVip,
-            amount: response.amount
-          },
-          userEmail: user.email
-        });
-        console.log('📝 usePixPayment: Log de auditoria registrado');
-      } catch (logError) {
-        console.error('⚠️ usePixPayment: Erro ao registrar log de auditoria:', logError);
-      }
-      
-    } catch (error) {
-      console.error('❌ usePixPayment: Erro ao criar transação PIX:', error);
-      
-      let errorMessage = 'Erro ao processar pagamento';
-      
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        console.error('📋 usePixPayment: Mensagem do erro:', errorMessage);
-      }
-      
-      console.error('🚨 usePixPayment: Definindo erro no estado:', errorMessage);
-      setError(errorMessage);
-      
-      // Log de auditoria do erro
-      try {
-        await logAuditEvent({
-          action: 'pix_transaction_error',
-          details: {
-            error: errorMessage,
-            planType,
-            isVip
-          },
-          userEmail: user.email
-        });
-        console.log('📝 usePixPayment: Log de erro registrado');
-      } catch (logError) {
-        console.error('⚠️ usePixPayment: Erro ao registrar log de erro:', logError);
-      }
-    } finally {
-      console.log('🏁 usePixPayment: Finalizando createTransaction');
-      setLoading(false);
-    }
-  };
+  // Esta função foi removida - funcionalidade movida para createPixPayment
 
   // Limpar erro
   const clearError = useCallback(() => {
@@ -182,8 +104,7 @@ export const usePixPayment = (): UsePixPaymentResult => {
           isVip: request.isVip,
           userEmail: request.userEmail
         },
-        userEmail: request.userEmail,
-        severity: 'info'
+        userEmail: request.userEmail
       });
 
       // Criar pagamento
@@ -212,8 +133,7 @@ export const usePixPayment = (): UsePixPaymentResult => {
           amount: response.transaction.pixCode.amount,
           planType: request.planType
         },
-        userEmail: request.userEmail,
-        severity: 'info'
+        userEmail: request.userEmail
       });
 
       return response;
@@ -240,8 +160,7 @@ export const usePixPayment = (): UsePixPaymentResult => {
           planType: request.planType,
           isVip: request.isVip
         },
-        userEmail: request.userEmail,
-        severity: 'error'
+        userEmail: request.userEmail
       });
 
       return null;

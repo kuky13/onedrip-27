@@ -11,7 +11,6 @@ export { default as QRCodeDisplay } from './QRCodeDisplay';
 export type {
   PlanData,
   PlanType,
-  PlanPeriod,
   PixTransaction,
   PixTransactionStatus,
   PixCode

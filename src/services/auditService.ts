@@ -42,7 +42,7 @@ export class AuditService {
     }
   }
 
-  // Registrar evento de auditoria
+// Registrar evento de auditoria
   async logEvent(event: Omit<AuditLog, 'id' | 'timestamp' | 'ipAddress' | 'userAgent'>): Promise<void> {
     try {
       // Gerar ID único para o log
@@ -56,10 +56,12 @@ export class AuditService {
       const auditLog: AuditLog = {
         id: logId,
         timestamp: new Date(),
+        createdAt: new Date(),
         action: event.action,
         details: event.details,
         userId: event.userId,
         userEmail: event.userEmail,
+        transactionId: event.transactionId,
         ipAddress,
         userAgent,
         severity: event.severity || 'info'
@@ -251,6 +253,7 @@ export class AuditService {
   async logPixTransaction(action: string, transactionId: string, details: any, userEmail?: string): Promise<void> {
     await this.logEvent({
       action: `pix_${action}`,
+      transactionId,
       details: {
         transactionId,
         ...details
@@ -261,9 +264,10 @@ export class AuditService {
   }
 
   // Logs de erro para transações PIX
-  async logPixError(error: string, details: any, userEmail?: string): Promise<void> {
+  async logPixError(error: string, details: any, userEmail?: string, transactionId?: string): Promise<void> {
     await this.logEvent({
       action: 'pix_error',
+      transactionId,
       details: {
         error,
         ...details
@@ -300,8 +304,8 @@ export const getLogStatistics = () =>
 export const logPixTransaction = (action: string, transactionId: string, details: any, userEmail?: string) => 
   auditService.logPixTransaction(action, transactionId, details, userEmail);
 
-export const logPixError = (error: string, details: any, userEmail?: string) => 
-  auditService.logPixError(error, details, userEmail);
+export const logPixError = (error: string, details: any, userEmail?: string, transactionId?: string) => 
+  auditService.logPixError(error, details, userEmail, transactionId);
 
 export const logSecurityEvent = (action: string, details: any, userEmail?: string) => 
   auditService.logSecurityEvent(action, details, userEmail);

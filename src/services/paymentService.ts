@@ -91,6 +91,16 @@ export const startPixPayment = async (planType: 'monthly' | 'yearly', isVip: boo
   try {
     console.log('🚀 Iniciando pagamento PIX:', { planType, isVip, userEmail });
     
+    // Verificar se as credenciais do Mercado Pago estão configuradas
+    const accessToken = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
+    const publicKey = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY;
+    
+    if (!accessToken || !publicKey) {
+      console.warn('⚠️ Credenciais do Mercado Pago não configuradas');
+      toast.error('Sistema PIX não configurado. Consulte a documentação para configurar as credenciais.');
+      return null;
+    }
+    
     if (!userEmail) {
       toast.error('Email do usuário é obrigatório para pagamento PIX');
       return null;
@@ -102,10 +112,21 @@ export const startPixPayment = async (planType: 'monthly' | 'yearly', isVip: boo
       userEmail
     };
     
-    const preference = await createPixPayment(paymentData);
+    // Por enquanto, simular resposta para demonstração
+    const mockPreference: PixPreferenceResponse = {
+      success: true,
+      preference_id: `pref_${Date.now()}`,
+      init_point: '#',
+      sandbox_init_point: '#',
+      qr_code: 'pix_code_example',
+      qr_code_base64: 'data:image/png;base64,example',
+      transaction_id: `tx_${Date.now()}`,
+      amount: getPlanInfo(planType, isVip).price,
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    };
     
-    console.log('✅ Pagamento PIX iniciado com sucesso');
-    return preference;
+    console.log('✅ Pagamento PIX simulado iniciado com sucesso');
+    return mockPreference;
     
   } catch (error: any) {
     console.error('❌ Erro ao iniciar pagamento PIX:', error);
