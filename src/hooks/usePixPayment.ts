@@ -11,7 +11,7 @@ import type {
   PixTransaction,
   PlanType
 } from '../../shared/types/pix';
-import { createPixPreference, type PixPaymentData, type PixPreferenceResponse } from '../services/paymentService';
+import { createPixPayment as createPixPaymentService, type PixPaymentData, type PixPreferenceResponse } from '../services/paymentService';
 import { pixTransactionService } from '../services/pixTransactionService';
 import { auditService } from '../services/auditService';
 
@@ -45,25 +45,26 @@ export const usePixPayment = (): UsePixPaymentResult => {
   const [lastRequest, setLastRequest] = useState<CreatePixTransactionRequest | null>(null);
 
   // Validar configuração na inicialização
-   useEffect(() => {
-     const validateConfig = async () => {
-       try {
-         const isValid = await paymentService.validateBackendConfig();
-         setIsConfigValid(isValid);
-         
-         if (!isValid) {
-           toast.error('Configuração do sistema de pagamento inválida. Contate o suporte.');
-         }
-       } catch (error) {
-         console.error('Erro ao validar configuração:', error);
-         setIsConfigValid(false);
-       }
-     };
-     
-     validateConfig();
-   }, []);
-
-  // Esta função foi removida - funcionalidade movida para createPixPayment
+  useEffect(() => {
+    const validateConfig = async () => {
+      try {
+        // Simples verificação de configuração
+        const accessToken = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
+        const publicKey = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY;
+        const isValid = !!(accessToken && publicKey);
+        setIsConfigValid(isValid);
+        
+        if (!isValid) {
+          toast.error('Configuração do sistema de pagamento inválida. Contate o suporte.');
+        }
+      } catch (error) {
+        console.error('Erro ao validar configuração:', error);
+        setIsConfigValid(false);
+      }
+    };
+    
+    validateConfig();
+  }, []);
 
   // Limpar erro
   const clearError = useCallback(() => {
@@ -154,35 +155,42 @@ export const usePixPayment = (): UsePixPaymentResult => {
         userEmail: request.userEmail
       };
       
-      const backendResponse = await createPixPreference(paymentData);
+      const backendResponse = await createPixPaymentService(paymentData);
       
       if (!backendResponse.success) {
-        throw new Error(backendResponse.error || 'Erro ao criar preferência de pagamento');
+        throw new Error('Erro ao criar preferência de pagamento');
       }
       
       // Converter resposta do backend para formato esperado
       const response: CreatePixTransactionResponse = {
         transaction: {
-          id: backendResponse.transactionId!,
+          id: backendResponse.transaction_id,
           userId: request.userId,
           userEmail: request.userEmail,
-          planType: request.planType,
-          isVip: request.isVip,
-          amount: backendResponse.amount!,
+          planData: {
+            id: 'plan-' + request.planType,
+            name: 'OneDrip',
+            type: request.planType,
+            price: backendResponse.amount || 29.90,
+            currency: 'BRL',
+            period: request.planType === 'monthly' ? 'mensal' : 'anual',
+            isVip: request.isVip
+          },
+          pixCode: {
+            id: `pix_${backendResponse.transaction_id}`,
+            code: backendResponse.qr_code || '',
+            qrCodeBase64: backendResponse.qr_code_base64 || '',
+            amount: backendResponse.amount || 29.90,
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            description: 'OneDrip'
+          },
           status: 'pending',
           createdAt: new Date(),
           updatedAt: new Date(),
-          expiresAt: new Date(backendResponse.expirationDate!),
-          pixCode: {
-            id: `pix_${backendResponse.transactionId}`,
-            transactionId: backendResponse.transactionId!,
-            qrCode: backendResponse.qrCode!,
-            qrCodeBase64: backendResponse.qrCodeBase64!,
-            amount: backendResponse.amount!,
-            expirationDate: new Date(backendResponse.expirationDate!),
-            createdAt: new Date()
-          }
-        }
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          notificationSent: false
+        },
+        redirectUrl: `/plans/payment/pix/${backendResponse.transaction_id}`
       };
 
       // Adicionar transação ao serviço
@@ -283,7 +291,7 @@ export const usePixPayment = (): UsePixPaymentResult => {
 
       return null;
     }
-  }, []);
+  }, [isConfigValid]);
 
   // Tentar novamente o último pagamento
   const retryPayment = useCallback(async (): Promise<CreatePixTransactionResponse | null> => {
