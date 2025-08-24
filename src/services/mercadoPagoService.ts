@@ -18,7 +18,7 @@ import { encryptSensitiveData, decryptSensitiveData } from './securityService';
 import { logAuditEvent } from './auditService';
 
 // Configuração do Mercado Pago (será obtida das variáveis de ambiente)
-const getMercadoPagoConfig = (): MercadoPagoConfig => {
+const getMercadoPagoConfig = (): MercadoPagoConfig | null => {
   console.log('🔧 Carregando configuração do Mercado Pago...');
   
   const accessToken = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
@@ -27,14 +27,12 @@ const getMercadoPagoConfig = (): MercadoPagoConfig => {
   console.log('🔑 Access Token presente:', !!accessToken);
   console.log('🔑 Public Key presente:', !!publicKey);
   
-  if (!accessToken) {
-    console.error('❌ VITE_MERCADO_PAGO_ACCESS_TOKEN não encontrado');
-    throw new Error('Access Token do Mercado Pago não configurado. Verifique a variável VITE_MERCADO_PAGO_ACCESS_TOKEN no arquivo .env.local');
-  }
-  
-  if (!publicKey) {
-    console.error('❌ VITE_MERCADO_PAGO_PUBLIC_KEY não encontrado');
-    throw new Error('Public Key do Mercado Pago não configurado. Verifique a variável VITE_MERCADO_PAGO_PUBLIC_KEY no arquivo .env.local');
+  if (!accessToken || !publicKey) {
+    console.warn('⚠️ Credenciais do Mercado Pago não configuradas. Sistema PIX não estará disponível.');
+    console.warn('💡 Para configurar, adicione no arquivo .env:');
+    console.warn('VITE_MERCADO_PAGO_ACCESS_TOKEN=seu_access_token_aqui');
+    console.warn('VITE_MERCADO_PAGO_PUBLIC_KEY=seu_public_key_aqui');
+    return null;
   }
   
   console.log('✅ Configuração do Mercado Pago carregada com sucesso');
@@ -52,20 +50,36 @@ const MP_API_BASE = 'https://api.mercadopago.com';
 
 // Classe principal do serviço Mercado Pago
 export class MercadoPagoService {
-  private config: MercadoPagoConfig;
+  private config: MercadoPagoConfig | null;
   private axiosInstance;
+  private isConfigured: boolean;
 
   constructor() {
     this.config = getMercadoPagoConfig();
-    this.axiosInstance = axios.create({
-      baseURL: MP_API_BASE,
-      headers: {
-        'Authorization': `Bearer ${this.config.accessToken}`,
-        'Content-Type': 'application/json',
-        'X-Idempotency-Key': this.generateIdempotencyKey()
-      },
-      timeout: 30000 // 30 segundos
-    });
+    this.isConfigured = this.config !== null;
+    
+    if (this.isConfigured && this.config) {
+      this.axiosInstance = axios.create({
+        baseURL: MP_API_BASE,
+        headers: {
+          'Authorization': `Bearer ${this.config.accessToken}`,
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': this.generateIdempotencyKey()
+        },
+        timeout: 30000 // 30 segundos
+      });
+    } else {
+      // Criar instância sem configuração para evitar erro
+      this.axiosInstance = axios.create({
+        baseURL: MP_API_BASE,
+        timeout: 30000
+      });
+    }
+  }
+
+  // Verificar se o serviço está configurado
+  isServiceConfigured(): boolean {
+    return this.isConfigured;
   }
 
   // Gerar chave de idempotência
@@ -92,6 +106,11 @@ export class MercadoPagoService {
     try {
       console.log('🚀 Iniciando criação de pagamento PIX:', request);
       
+      // Verificar se o serviço está configurado
+      if (!this.isServiceConfigured()) {
+        throw new Error('Sistema PIX não está configurado. Configure as credenciais do Mercado Pago no arquivo .env para usar esta funcionalidade.');
+      }
+      
       // Validar dados de entrada
       if (!request.userEmail) {
         throw new Error('Email do usuário é obrigatório');
@@ -104,10 +123,10 @@ export class MercadoPagoService {
       
       // Verificar configuração do Mercado Pago
       console.log('🔧 Verificando configuração do Mercado Pago...');
-      if (!this.config.accessToken) {
+      if (!this.config?.accessToken) {
         throw new Error('Access Token do Mercado Pago não configurado');
       }
-      if (!this.config.publicKey) {
+      if (!this.config?.publicKey) {
         throw new Error('Public Key do Mercado Pago não configurado');
       }
       console.log('✅ Configuração do Mercado Pago OK', { 
