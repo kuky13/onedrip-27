@@ -22,8 +22,8 @@ No painel do Supabase (https://supabase.com/dashboard), vá em:
 Adicione as seguintes variáveis:
 
 ```
-MERCADO_PAGO_ACCESS_TOKEN=APP_USR-5493371086878462-080109-0da4d53630bd560c3fbb4f0272bd984f-1376810125
-MERCADO_PAGO_WEBHOOK_SECRET=7f5bd50d10422aa2e418738cda43c271b5d27adda454c33604ad67506538d1e4
+MERCADO_PAGO_ACCESS_TOKEN=APP_USR-5318421292762248-082413-b52fc192c877be236ee07147c5a7eb37-1376810125
+MERCADO_PAGO_WEBHOOK_SECRET=367d90acf1873e9d1db65740f9670a8248e30ffaa30a3d7e512ac9d322bd57d8
 MERCADO_PAGO_WEBHOOK_URL=https://oghjlypdnmqecaavekyr.supabase.co/functions/v1/pix-webhook
 ```
 
@@ -49,7 +49,7 @@ supabase db push
 ```bash
 curl -X POST \
   'https://api.mercadopago.com/v1/webhooks' \
-  -H 'Authorization: Bearer APP_USR-5493371086878462-080109-0da4d53630bd560c3fbb4f0272bd984f-1376810125' \
+  -H 'Authorization: Bearer APP_USR-5318421292762248-082413-b52fc192c877be236ee07147c5a7eb37-1376810125' \
   -H 'Content-Type: application/json' \
   -d '{
     "url": "https://oghjlypdnmqecaavekyr.supabase.co/functions/v1/pix-webhook",
