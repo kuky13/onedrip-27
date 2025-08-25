@@ -38,8 +38,9 @@ import { Input } from '@/components/ui/input';
 import { AdminNavigation } from '@/components/admin/AdminNavigation';
 import { AdminQuickActions } from '@/components/admin/AdminQuickActions';
 import { AdminNotificationManager } from '@/components/admin/AdminNotificationManager';
+import WhatsAppAnalytics from '@/components/WhatsAppAnalytics';
 
-type ActiveSection = 'overview' | 'users' | 'licenses' | 'site' | 'tools' | 'notifications' | 'settings';
+type ActiveSection = 'overview' | 'users' | 'licenses' | 'site' | 'tools' | 'notifications' | 'settings' | 'whatsapp';
 
 export const AdminPanelModern = () => {
   const [activeSection, setActiveSection] = useState<ActiveSection>('overview');
@@ -275,6 +276,20 @@ export const AdminPanelModern = () => {
         );
       case 'tools':
         return renderTools();
+      case 'whatsapp':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Análises WhatsApp
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <WhatsAppAnalytics />
+            </CardContent>
+          </Card>
+        );
       default:
         return renderOverview();
     }

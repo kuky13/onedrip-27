@@ -23,11 +23,7 @@ import { FAQSection } from './components/FAQSection';
 import { FinalCTA } from './components/FinalCTA';
 
 // Importando utilitários do WhatsApp
-
-
-// Importando serviço de pagamento
-import { startPixPayment, type PixPreferenceResponse } from '@/services/paymentService';
-import PixPaymentModal from '@/components/PixPaymentModal';
+// TODO: Implementar WhatsApp integration
 import { toast } from 'sonner';
 
 type BillingCycle = 'monthly' | 'yearly';
@@ -35,8 +31,6 @@ type BillingCycle = 'monthly' | 'yearly';
 export const PlansPage = () => {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [isVipSelected, setIsVipSelected] = useState(false);
-  const [isPixModalOpen, setIsPixModalOpen] = useState(false);
-  const [pixPaymentData, setPixPaymentData] = useState<PixPreferenceResponse | null>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const navigate = useNavigate();
 
@@ -54,40 +48,25 @@ export const PlansPage = () => {
     try {
       setIsProcessingPayment(true);
       
-      // Email do usuário (em produção, pegar do contexto de autenticação)
-      const userEmail = 'usuario@exemplo.com'; // TODO: Pegar do contexto de usuário
+      // TODO: Implementar integração com WhatsApp
+      console.log('🚀 Iniciando processo de venda via WhatsApp:', { billingCycle, isVipSelected });
       
-      console.log('🚀 Iniciando pagamento PIX:', { billingCycle, isVipSelected, userEmail });
+      // Placeholder para integração WhatsApp
+      toast.success('Redirecionando para WhatsApp...');
       
-      const paymentData = await startPixPayment(billingCycle, isVipSelected, userEmail);
+      // Simular redirecionamento para WhatsApp
+      setTimeout(() => {
+        window.open('https://wa.me/5511999999999?text=Olá, tenho interesse no plano!', '_blank');
+      }, 1000);
       
-      if (paymentData) {
-        setPixPaymentData(paymentData);
-        setIsPixModalOpen(true);
-        toast.success('Código PIX gerado com sucesso!');
-      } else {
-        toast.error('Erro ao gerar código PIX. Tente novamente.');
-      }
     } catch (error) {
-      console.error('❌ Erro ao processar pagamento:', error);
-      toast.error('Erro ao processar pagamento. Tente novamente.');
+      console.error('❌ Erro ao processar:', error);
+      toast.error('Erro ao processar. Tente novamente.');
     } finally {
       setIsProcessingPayment(false);
     }
   };
-  
-  const handlePaymentSuccess = () => {
-    toast.success('Pagamento aprovado! Redirecionando...');
-    // Redirecionar para página de sucesso ou dashboard
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 2000);
-  };
-  
-  const handleClosePixModal = () => {
-    setIsPixModalOpen(false);
-    setPixPaymentData(null);
-  };
+
 
   const aoVoltar = () => {
     navigate('/');
@@ -174,15 +153,7 @@ export const PlansPage = () => {
         />
       </div>
 
-      {/* Modal de Pagamento PIX */}
-      {pixPaymentData && (
-        <PixPaymentModal
-          isOpen={isPixModalOpen}
-          onClose={handleClosePixModal}
-          paymentData={pixPaymentData}
-          onPaymentSuccess={handlePaymentSuccess}
-        />
-      )}
+      {/* TODO: Implementar modal/componente WhatsApp quando necessário */}
     </div>
   );
 };

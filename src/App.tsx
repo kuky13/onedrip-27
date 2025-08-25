@@ -13,9 +13,7 @@ import { SignUpPage } from "./pages/SignUpPage";
 import { SignPage } from "./pages/SignPage";
 import { PlansPage } from "./plans/PlansPage";
 import { PurchaseSuccessPage } from "./pages/PurchaseSuccessPage";
-import { PaymentSuccess } from "./pages/PaymentSuccess";
-import { PaymentFailure } from "./pages/PaymentFailure";
-import { PaymentStatus } from "./pages/PaymentStatus";
+
 import { DashboardLite } from "./pages/DashboardLite";
 import { CookiePage } from "./pages/CookiePage";
 import { PrivacyPage } from "./pages/PrivacyPage";
@@ -122,9 +120,7 @@ const AppContent = () => {
         <Route path="/licenca" element={<LicensePage />} />
         <Route path="/plans" element={<PlansPage />} />
         <Route path="/purchase-success" element={<PurchaseSuccessPage />} />
-        <Route path="/payment/success" element={<PaymentSuccess />} />
-        <Route path="/payment/failure" element={<PaymentFailure />} />
-        <Route path="/payment/status/:transactionId" element={<PaymentStatus />} />
+
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify" element={<VerifyPage />} />
         

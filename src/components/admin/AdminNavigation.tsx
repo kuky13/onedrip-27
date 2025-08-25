@@ -18,10 +18,11 @@ import {
   FileText,
   Zap,
   Lock,
-  ChevronRight
+  ChevronRight,
+  MessageCircle
 } from 'lucide-react';
 
-type ActiveSection = 'overview' | 'users' | 'licenses' | 'site' | 'tools' | 'notifications' | 'settings';
+type ActiveSection = 'overview' | 'users' | 'licenses' | 'site' | 'tools' | 'notifications' | 'settings' | 'whatsapp';
 
 interface AdminNavigationProps {
   activeSection: ActiveSection;
@@ -71,6 +72,14 @@ export const AdminNavigation = ({ activeSection, onSectionChange }: AdminNavigat
       count: null
     },
     {
+      id: 'whatsapp' as ActiveSection,
+      label: 'WhatsApp',
+      icon: MessageCircle,
+      description: 'Análises e conversões',
+      color: 'bg-green-500/10 text-green-600 dark:text-green-400',
+      count: null
+    },
+    {
       id: 'tools' as ActiveSection,
       label: 'Ferramentas',
       icon: Settings,
@@ -81,7 +90,7 @@ export const AdminNavigation = ({ activeSection, onSectionChange }: AdminNavigat
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
       {navigationItems.map((item) => (
         <Button
           key={item.id}

@@ -6,12 +6,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { PlansHero } from '@/components/plans/PlansHero';
 import { BenefitsSection } from '@/components/plans/BenefitsSection';
-import { PlanCard } from '@/components/plans/PlanCard';
 import { TestimonialsSection } from '@/components/plans/TestimonialsSection';
 import { FAQSection } from '@/components/plans/FAQSection';
-import { FinalCTA } from '@/components/plans/FinalCTA';
-import { startPixPayment, type PixPreferenceResponse } from '@/services/paymentService';
-import PixPaymentModal from '@/components/PixPaymentModal';
+
+import MercadoPagoCheckout from '@/components/MercadoPagoCheckout';
+
 
 interface SiteSettings {
   plan_name: string;
@@ -60,63 +59,24 @@ interface SiteSettings {
 }
 
 export const PlansPage = () => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const [isVip, setIsVip] = useState(false);
-  const [isPixModalOpen, setIsPixModalOpen] = useState(false);
-  const [pixPaymentData, setPixPaymentData] = useState<PixPreferenceResponse | null>(null);
   const navigate = useNavigate();
 
-  // Fetch site settings from database
-  const {
-    data: settings,
-    isLoading
-  } = useQuery({
-    queryKey: ['site-settings'],
+  const { data: siteSettings, isLoading } = useQuery({
+    queryKey: ['siteSettings'],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from('site_settings').select('*').single();
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .single();
       
-      if (error) {
-        console.error('Error fetching site settings:', error);
-        return null;
-      }
-      
+      if (error) throw error;
       return data;
     }
   });
 
-  useEffect(() => { document.title = "Planos | OneDrip"; }, []);
-  
-  const handlePixPayment = async () => {
-    try {
-      console.log('Iniciando pagamento PIX:', { billingCycle, isVip });
-      
-      // Email temporário para desenvolvimento - em produção, pegar do usuário logado
-      const userEmail = 'usuario@exemplo.com';
-      
-      const paymentData = await startPixPayment(billingCycle, isVip, userEmail);
-      
-      if (paymentData) {
-        setPixPaymentData(paymentData);
-        setIsPixModalOpen(true);
-      }
-    } catch (error) {
-      console.error('Erro ao iniciar pagamento PIX:', error);
-    }
-  };
-  
-  const handlePixModalClose = () => {
-    setIsPixModalOpen(false);
-    setPixPaymentData(null);
-  };
-  
-  const handlePaymentSuccess = () => {
-    console.log('Pagamento realizado com sucesso!');
-    // Aqui você pode redirecionar para uma página de sucesso ou atualizar o estado do usuário
-    navigate('/dashboard'); // ou outra página apropriada
-  };
+  useEffect(() => { 
+    document.title = "Planos | OneDrip";
+  }, []);
 
   const handleGoBack = () => {
     navigate('/');
@@ -129,54 +89,54 @@ export const PlansPage = () => {
       </div>;
   }
 
-      // Use settings or fallback values with proper type conversion
-      const config = {
+  // Use settings or fallback values with proper type conversion
+  const config = {
         // Ensure we have all the new fields with fallbacks and proper type casting
-        benefits_section_title: settings?.benefits_section_title || 'Vantagens do Oliver',
-        benefits_section_subtitle: settings?.benefits_section_subtitle || 'Descubra os benefícios de usar nosso sistema',
-        benefits_data: (settings?.benefits_data as any) || [
+        benefits_section_title: siteSettings?.benefits_section_title || 'Vantagens do Oliver',
+        benefits_section_subtitle: siteSettings?.benefits_section_subtitle || 'Descubra os benefícios de usar nosso sistema',
+        benefits_data: (siteSettings?.benefits_data as any) || [
           { icon: "Zap", title: "Rápido e Eficiente", description: "Crie orçamentos profissionais em menos de 2 minutos" },
           { icon: "Shield", title: "Seguro e Confiável", description: "Seus dados protegidos com tecnologia de ponta" },
           { icon: "Users", title: "Suporte Dedicado", description: "Atendimento brasileiro via WhatsApp quando precisar" },
           { icon: "Award", title: "Resultados Comprovados", description: "Mais de 500+ assistências técnicas já confiam no Oliver" }
         ],
-        show_benefits_section: settings?.show_benefits_section ?? true,
+        show_benefits_section: siteSettings?.show_benefits_section ?? true,
         
-        testimonials_section_title: settings?.testimonials_section_title || 'O que nossos clientes dizem',
-        testimonials_section_subtitle: settings?.testimonials_section_subtitle || 'Depoimentos reais de quem já usa o Oliver',
-        testimonials_data: (settings?.testimonials_data as any) || [
+        testimonials_section_title: siteSettings?.testimonials_section_title || 'O que nossos clientes dizem',
+        testimonials_section_subtitle: siteSettings?.testimonials_section_subtitle || 'Depoimentos reais de quem já usa o Oliver',
+        testimonials_data: (siteSettings?.testimonials_data as any) || [
           { name: "Carlos Silva", role: "Proprietário - TechRepair", content: "O Oliver transformou minha assistência. Agora consigo fazer orçamentos profissionais em minutos!", rating: 5 },
           { name: "Ana Maria", role: "Gerente - CelFix", content: "Sistema incrível! Organização total dos clientes e orçamentos. Recomendo muito!", rating: 5 },
           { name: "João Santos", role: "Técnico - MobileTech", content: "Interface simples e funcional. Perfeito para quem quer profissionalizar o negócio.", rating: 5 }
         ],
-        show_testimonials_section: settings?.show_testimonials_section ?? true,
+        show_testimonials_section: siteSettings?.show_testimonials_section ?? true,
         
-        faq_section_title: settings?.faq_section_title || 'Perguntas Frequentes',
-        faq_section_subtitle: settings?.faq_section_subtitle || 'Tire suas dúvidas sobre o Oliver',
-        faq_data: (settings?.faq_data as any) || [
+        faq_section_title: siteSettings?.faq_section_title || 'Perguntas Frequentes',
+        faq_section_subtitle: siteSettings?.faq_section_subtitle || 'Tire suas dúvidas sobre o Oliver',
+        faq_data: (siteSettings?.faq_data as any) || [
           { question: "Como funciona o período de teste?", answer: "Você tem 2 dias para testar todas as funcionalidades gratuitamente." },
-          { question: "Posso cancelar a qualquer momento?", answer: "Sim! Não há fidelidade. Cancele quando quiser pelo WhatsApp." },
-          { question: "O suporte está incluso?", answer: "Sim! Suporte completo via WhatsApp está incluído em todos os planos." },
+          { question: "Posso cancelar a qualquer momento?", answer: "Sim! Não há fidelidade. Entre em contato conosco para cancelar quando quiser." },
+          { question: "O suporte está incluso?", answer: "Sim! Suporte completo está incluído em todos os planos." },
           { question: "Funciona no celular?", answer: "Perfeitamente! O sistema é responsivo e funciona em qualquer dispositivo." }
         ],
-        show_faq_section: settings?.show_faq_section ?? true,
+        show_faq_section: siteSettings?.show_faq_section ?? true,
         
         // Existing fields with fallbacks
-        plan_name: settings?.plan_name || 'Plano Profissional',
-        plan_description: settings?.plan_description || 'Para assistências técnicas que querem crescer',
-        plan_price: settings?.plan_price || 45,
-        plan_currency: settings?.plan_currency || 'R$',
-        plan_period: settings?.plan_period || '/mês',
-        plan_features: (settings?.plan_features as string[]) || ["Sistema completo de orçamentos", "Gestão de clientes ilimitada", "Cálculos automáticos", "Controle de dispositivos", "Suporte técnico incluso", "Atualizações gratuitas", "Backup automático"],
-        whatsapp_number: settings?.whatsapp_number || '556496028022',
-        page_title: settings?.page_title || 'Escolha seu Plano',
-        page_subtitle: settings?.page_subtitle || 'Tenha acesso completo ao sistema de gestão de orçamentos mais eficiente para assistências técnicas.',
-        popular_badge_text: settings?.popular_badge_text || 'Mais Popular',
-        cta_button_text: settings?.cta_button_text || 'Assinar Agora',
-        support_text: settings?.support_text || 'Suporte via WhatsApp incluso',
-        show_popular_badge: settings?.show_popular_badge ?? true,
-        show_support_info: settings?.show_support_info ?? true,
-        additional_info: settings?.additional_info || '✓ Sem taxa de setup • ✓ Cancele quando quiser • ✓ Suporte brasileiro'
+        plan_name: siteSettings?.plan_name || 'Plano Profissional',
+        plan_description: siteSettings?.plan_description || 'Para assistências técnicas que querem crescer',
+        plan_price: siteSettings?.plan_price || 45,
+        plan_currency: siteSettings?.plan_currency || 'R$',
+        plan_period: siteSettings?.plan_period || '/mês',
+        plan_features: (siteSettings?.plan_features as string[]) || ["Sistema completo de orçamentos", "Gestão de clientes ilimitada", "Cálculos automáticos", "Controle de dispositivos", "Suporte técnico incluso", "Atualizações gratuitas", "Backup automático"],
+        whatsapp_number: siteSettings?.whatsapp_number || '556496028022',
+        page_title: siteSettings?.page_title || 'Escolha seu Plano',
+        page_subtitle: siteSettings?.page_subtitle || 'Tenha acesso completo ao sistema de gestão de orçamentos mais eficiente para assistências técnicas.',
+        popular_badge_text: siteSettings?.popular_badge_text || 'Mais Popular',
+        cta_button_text: siteSettings?.cta_button_text || 'Assinar Agora',
+        support_text: siteSettings?.support_text || 'Suporte via WhatsApp incluso',
+        show_popular_badge: siteSettings?.show_popular_badge ?? true,
+        show_support_info: siteSettings?.show_support_info ?? true,
+        additional_info: siteSettings?.additional_info || '✓ Sem taxa de setup • ✓ Cancele quando quiser • ✓ Suporte brasileiro'
       };
   return <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Enhanced Background decoration com as novas cores */}
@@ -211,38 +171,36 @@ export const PlansPage = () => {
           benefits={config.benefits_data}
           show={config.show_benefits_section}
         />
-        {/* Billing cycle toggle */}
-        <div className="flex flex-col items-center gap-4 mb-2">
-          <div className="flex items-center justify-center gap-2">
-            <Button variant={billingCycle === 'monthly' ? 'default' : 'outline'} size="sm" onClick={() => setBillingCycle('monthly')}>
-              Mensal
-            </Button>
-            <Button variant={billingCycle === 'yearly' ? 'default' : 'outline'} size="sm" onClick={() => setBillingCycle('yearly')}>
-              Anual <span className="ml-2 text-xs text-muted-foreground">(2 meses grátis)</span>
-            </Button>
+        
+        {/* Checkout Section */}
+        <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Escolha Seu Plano
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Selecione o plano ideal para seu negócio e pague de forma segura via Mercado Pago
+              </p>
+              <div className="mt-6 flex items-center justify-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span>Pagamento 100% Seguro</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>Ativação Imediata</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <span>Suporte 24/7</span>
+                </div>
+              </div>
+            </div>
+            
+            <MercadoPagoCheckout className="max-w-7xl mx-auto" />
           </div>
-          
-          {/* VIP toggle */}
-          <div className="flex items-center justify-center gap-2">
-            <Button variant={!isVip ? 'default' : 'outline'} size="sm" onClick={() => setIsVip(false)}>
-              Plano Normal
-            </Button>
-            <Button variant={isVip ? 'default' : 'outline'} size="sm" onClick={() => setIsVip(true)}>
-              Plano VIP <span className="ml-2 text-xs text-muted-foreground">(Recursos extras)</span>
-            </Button>
-          </div>
-        </div>
-        <PlanCard 
-          config={{
-            ...config,
-            plan_name: isVip ? `${config.plan_name} VIP` : config.plan_name,
-            plan_description: isVip ? `${config.plan_description} + Recursos VIP` : config.plan_description,
-            plan_price: billingCycle === 'yearly' ? Math.round(config.plan_price * 12 * 0.83) : config.plan_price,
-            plan_period: billingCycle === 'yearly' ? '/ano' : config.plan_period,
-            plan_features: isVip ? [...config.plan_features, "Recursos VIP exclusivos", "Suporte prioritário", "Funcionalidades avançadas"] : config.plan_features,
-          }} 
-          onPlanSelection={handlePixPayment} 
-        />
+        </section>
         <TestimonialsSection 
           title={config.testimonials_section_title}
           subtitle={config.testimonials_section_subtitle}
@@ -255,11 +213,7 @@ export const PlansPage = () => {
           faqs={config.faq_data}
           show={config.show_faq_section}
         />
-        <FinalCTA 
-          additionalInfo={config.additional_info} 
-          ctaButtonText={config.cta_button_text}
-          onPlanSelection={handlePixPayment}
-        />
+
         
         {/* Footer com links para políticas */}
         <div className="text-center py-8 border-t border-border/20">
@@ -288,32 +242,7 @@ export const PlansPage = () => {
         </div>
       </div>
 
-      {/* Sticky mobile CTA */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/80 backdrop-blur-md p-3 md:hidden">
-        <div className="container mx-auto flex items-center justify-between gap-3">
-          <Button onClick={handlePixPayment} className="flex-1">
-            {config.cta_button_text}
-          </Button>
-          <a
-            href={`https://wa.me/${config.whatsapp_number}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted-foreground underline-offset-4 hover:underline"
-          >
-            Dúvidas?
-          </a>
-        </div>
-      </div>
-      
-      {/* Modal PIX */}
-      {isPixModalOpen && pixPaymentData && (
-        <PixPaymentModal
-          isOpen={isPixModalOpen}
-          onClose={handlePixModalClose}
-          paymentData={pixPaymentData}
-          onPaymentSuccess={handlePaymentSuccess}
-        />
-      )}
+
 
 
     </div>;

@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Check, Loader2, CreditCard, Crown } from 'lucide-react';
-import { redirectToPayment } from '../../services/paymentService';
 import { PLANS_CONTENT } from '../data/content';
-import { PixSelector, PixPaymentInterface } from '@/components/pix';
-import type { PlanType } from '../../../shared/types/pix';
+// TODO: Import WhatsApp integration components
 
 interface DadosPlano {
   nome: string;
@@ -36,8 +34,7 @@ interface PlanCardProps {
 export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 'user@example.com', onVipToggle, isProcessing = false }: PlanCardProps) => {
   const [loading, setLoading] = useState(false);
   const [vipSelected, setVipSelected] = useState(isVip);
-  const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'pix'>('mercadopago');
-  const [showPixPayment, setShowPixPayment] = useState(false);
+  // TODO: Add WhatsApp integration state
   const vipData = PLANS_CONTENT.vip;
 
   const handleVipToggle = (checked: boolean) => {
@@ -56,29 +53,20 @@ export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 
   const handlePayment = () => {
     setLoading(true);
     try {
-      if (paymentMethod === 'pix') {
-        setShowPixPayment(true);
-      } else {
-        redirectToPayment(
-          plano.ciclo, // 'monthly' ou 'yearly'
-          vipSelected // Usar vipSelected em vez de isVip prop
-        );
-      }
+      // TODO: Implement WhatsApp integration
+      console.log('Redirecting to WhatsApp for plan:', plano.nome, 'VIP:', vipSelected);
+      
+      // Placeholder WhatsApp redirect
+      const message = `Olá! Tenho interesse no plano ${plano.nome}${vipSelected ? ' VIP' : ''}. Valor: ${plano.moeda}${calculateTotalPrice().toFixed(2)}${plano.periodo}`;
+      const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      
     } catch (error) {
-      console.error('Erro no pagamento:', error);
-      alert('Erro ao processar pagamento. Tente novamente.');
+      console.error('Erro ao processar:', error);
+      alert('Erro ao processar. Tente novamente.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const getPlanType = (): PlanType => {
-    return plano.ciclo === 'monthly' ? 'monthly' : 'yearly';
-  };
-
-  const handlePixPaymentClose = () => {
-    setShowPixPayment(false);
-    setLoading(false);
   };
 
   const handleButtonClick = () => {
@@ -204,22 +192,7 @@ export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 
             </div>
           </div>
           
-          {/* Seletor de Método de Pagamento */}
-          <div className="mb-6">
-            <PixSelector
-              plan={{
-                id: `plan-${plano.nome.toLowerCase().replace(/\s+/g, '-')}`,
-                name: plano.nome,
-                type: getPlanType(),
-                price: calculateTotalPrice(),
-                currency: 'BRL',
-                period: plano.periodo,
-                isVip: vipSelected
-              }}
-              selectedMethod={paymentMethod}
-              onMethodChange={setPaymentMethod}
-            />
-          </div>
+          {/* TODO: Add WhatsApp integration selector if needed */}
 
           {/* Botão de Ação */}
           <Button 
@@ -243,28 +216,12 @@ export const PlanCard = ({ plano, aoSelecionarPlano, isVip = false, userEmail = 
                 ) : (
                   <CreditCard className="mr-2 h-4 w-4" />
                 )}
-                {paymentMethod === 'pix' ? 'Pagar com PIX' : (vipSelected ? `${plano.botao_texto} VIP` : plano.botao_texto)}
+                {vipSelected ? `${plano.botao_texto} VIP` : plano.botao_texto}
               </>
             )}
           </Button>
 
-          {/* Interface de Pagamento PIX */}
-          {showPixPayment && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-card rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
-                <PixPaymentInterface
-                  planType={getPlanType()}
-                  isVip={vipSelected}
-                  userEmail={userEmail}
-                  onClose={handlePixPaymentClose}
-                  onSuccess={() => {
-                    handlePixPaymentClose();
-                    // Aqui você pode adicionar lógica adicional de sucesso
-                  }}
-                />
-              </div>
-            </div>
-          )}
+          {/* TODO: Add WhatsApp integration modal if needed */}
           
           {/* Informações de Suporte */}
           {plano.mostrar_suporte && (
